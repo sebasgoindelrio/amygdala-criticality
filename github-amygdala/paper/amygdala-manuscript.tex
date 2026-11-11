@@ -1,0 +1,837 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{times}
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath,amssymb}
+\usepackage{caption}
+\usepackage{setspace}
+\usepackage[hidelinks]{hyperref}
+
+\setstretch{1.03}
+\setlength{\parskip}{0.28em}
+\setlength{\parindent}{0pt}
+\captionsetup{font=small,labelfont=bf,skip=3pt}
+\graphicspath{{figures/}}
+
+\title{Surprise Is Not Importance:\\
+Criticality Read from Hidden States\\
+Gates Sleep-Like Consolidation}
+\author{Sebastian Goin del Rio\\
+\textit{Independent researcher, Switzerland}\\
+\texttt{sebastiangoindelrio@gmail.com}\\
+\url{https://github.com/sebasgoindelrio}}
+\date{Preprint --- November 2026}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+\pagestyle{plain}
+
+\begin{abstract}
+A model that writes new facts into a LoRA adapter every night forgets what it does not rehearse, so a fixed replay budget is a choice of what matters.
+The usual guides are surprise and detected forgetting.
+We test a third: \emph{criticality}---whether losing a fact would bear on health, safety, money, or legal standing---read by a small probe from the frozen model's own residual stream.
+In \texttt{Qwen2.5-0.5B-Instruct}~\cite{qwen2025} the probe ranks the critical facts of a synthetic 100-fact benchmark at AUROC~0.99 with no lexical traps in its top~30; answer-loss surprise scores 0.53 and collects eight of ten traps.
+As the gate of ten nights of replay ($k{=}12$, three seeds) it retains $20.3{\pm}1.2$ of 30 critical facts, against 12.7 for random replay, 14.3 for replaying forgotten facts, and 10.3 for surprise, and is not distinguishable from a label oracle (19.0) at $n{=}3$; linear probes at two layers do about as well in a matched rerun.
+On an independent 229-sentence exam outside the training templates, half of it in a language the probe never saw, the probes keep AUROC 0.98--0.99 while word TF-IDF falls to 0.65: the signal is semantic, not lexical.
+It is not special to the model's hidden state: off-the-shelf sentence encoders match the probes, and a 7B model asked directly reaches 1.00---although the 0.5B model asked directly scores 0.42, below the 0.99 read from its own layer~16.
+Two limits are measured rather than assumed.
+A streaming gate that never sees the number of critical facts still beats random replay but leads a TF-IDF gate only narrowly on template data.
+And when a sentence is critical only given person facts stored in the adapter, readouts fixed in advance stay weak (AUROC 0.57; chance controls 0.50; 0.90--0.99 with the facts in context).
+All data are synthetic or LLM-written, and three-seed contrasts are descriptive.
+\end{abstract}
+
+\section{Introduction}
+
+An agent that lives across many days cannot keep every new fact in context, and it cannot rehearse every fact into its weights.
+With a fixed replay budget the policy that fills the budget \emph{is} the memory.
+Prioritised replay ranks by surprise~\cite{schaul2015per}.
+Sleep-style loops consolidate experience into parameters~\cite{behrouz2026sleep,dennis2026nightly,han2026evaf}, and agent memory systems either page an external store~\cite{packer2023memgpt} or ask a model to rate importance in text~\cite{park2023generative}.
+We ask a narrower question: does an intermediate hidden state already mark which episodic facts are consequential enough to replay?
+
+In \texttt{Qwen2.5-0.5B-Instruct}, it does.
+A small probe on the mean residual, with the backbone frozen, reads a \textbf{criticality} signal: whether forgetting the fact would bear on health, safety, money, or legal standing.
+Affective valence is not the target.
+Used as the quota for nocturnal LoRA updates, the probe---\textbf{Amygdala}---raises critical facts retained after ten nights from 12.7 to 20.3 out of 30 and is not distinguishable from a label oracle at $n{=}3$, while surprise falls below random replay.
+Detecting that something was forgotten is not enough.
+The run has to know what the forgotten fact was worth.
+
+That ten-night comparison used one synthetic world, a global top-30 (the probe was told, in effect, that thirty facts were critical), and a one-hidden-layer probe at layer~16.
+The schedule was fixed earlier, on a 30-fact pilot: the KL-anchor night, an on/off with a LoRA judge, and a direct loss to surprise, in Section~\ref{sec:pilots}.
+The first Kalandor-100 run at the old quota ($k{=}4$) and the capacity sweep sit between that pilot and the result above.
+What follows is what we checked afterwards.
+A layer sweep shows the signal is linearly decodable, low-dimensional, and present from 0.5B to 7B on this template set, with a broad plateau rather than a single locus (Section~\ref{sec:e7}).
+Ablating that direction collapses the probe and leaves matched controls intact---a sanity check on the score until a refit-after-ablation probe lands, not a necessity claim for generation (Section~\ref{sec:e9}).
+Lexical and prompting controls show the ranking is not bag-of-words and not a yes/no question put to the same model, on this template set (Section~\ref{sec:e10}).
+A streaming top-3-per-day gate, which never sees the global count, still beats random sleep on regenerated worlds, and leads TF-IDF by a margin we report as small and seed-sensitive (Section~\ref{sec:e11}).
+Holding that gate fixed and changing only the nocturnal loss mix shows no evidence that $0.3{+}0.7\,S$ helps over uniform or $S$-only weights (Section~\ref{sec:e12}).
+A leave-one-template-family holdout with a validation-split layer pick and a non-tied preference for layers $\{6,16\}$ still sits near the family ceiling on this pool (Section~\ref{sec:e13}).
+Iterative nullspace projection does not drive a freshly trained probe to chance, so the ablation stays a sanity check rather than a causal claim (Section~\ref{sec:e14}).
+A single fixed top-30 sleep grid then runs the layer-6 and layer-16 linears beside the original layer-16 MLP, random, and oracle under the same night---no streaming---so the linear and MLP stories share one run (Section~\ref{sec:e15}).
+An out-of-template exam then asks whether the ranking survives a change of words: it does for probes and for MiniLM/e5, and it does not for word TF-IDF (Section~\ref{sec:e16}).
+A separate memory-conditioned test asks whether the same probe can read criticality that is not on the sentence surface but only in LoRA-stored person risks: the pre-registered answer is weak, and a last-token preregistration confirms it (Sections~\ref{sec:e17}--\ref{sec:e17b}).
+
+\section{Related work}
+
+\paragraph{Reading representations.}
+Linear probes recover concepts from intermediate layers~\cite{alain2016probe}.
+Representation engineering reads directions for monitoring and steering~\cite{zou2023repe}.
+ROME locates factual associations in mid-layer weights~\cite{meng2022rome}.
+We use the same readability fact for a different decision: not what the model will say next, but which experiences are allowed into a weight update.
+
+\paragraph{What gets written.}
+Prioritised experience replay ranks by temporal-difference error, a surprise signal~\cite{schaul2015per}.
+Generative agents store a natural-language importance rating elicited from an LLM~\cite{park2023generative}.
+EVAF gates LoRA writes by valence times surprise, with valence from an external oracle, as a protocol for persona consolidation~\cite{han2026evaf}.
+Sleep consolidates wake experience into parameters by self-distillation~\cite{behrouz2026sleep}; a nightly reflect--synthesise--LoRA pipeline does the same for conversational memory~\cite{dennis2026nightly}.
+MemGPT pages an external archival store when the context window fills~\cite{packer2023memgpt}.
+Titans keeps a neural memory at test time~\cite{behrouz2025titans}.
+None of these reads a criticality direction out of the model's own residual stream and spends a fixed nocturnal replay quota on it.
+Amygdala is that policy.
+The claim is not ``emotion into LoRA'': the label is consequence, the scorer is internal, and the store after the night is the adapter.
+
+\section{Method}
+\label{sec:method}
+
+\paragraph{Model and night.}
+The backbone is \texttt{Qwen/Qwen2.5-0.5B-Instruct} (24 layers, hidden size 896), frozen.
+Each night a LoRA adapter~\cite{hu2021lora} ($r{=}8$, $\alpha{=}16$, on \texttt{q\_proj} and \texttt{v\_proj}) is trained with AdamW at learning rate $5{\times}10^{-5}$ for 28 passes over the day's 10 new facts plus $k{=}12$ replayed old facts.
+A KL penalty with $\lambda{=}1$ pulls each update toward the frozen base model on a pool of 20 general questions, in the spirit of learning without forgetting~\cite{li2016lwf}.
+One anchor question is drawn into each update.
+The nightly batch also includes three general question--answer pairs at weight 1, separate from that KL pool.
+The probe always reads the base model, with the adapter off, so the score does not drift as the adapter learns.
+
+\paragraph{Probe.}
+For a fact $x$, let $\bar h_{\ell}(x)\in\mathbb{R}^{896}$ be the mean over tokens of the residual at layer $\ell$.
+The consolidation runs in Section~\ref{sec:e5b} use layer $\ell{=}16$ and a one-hidden-layer probe,
+\[
+S(x)=\sigma\big(W_2\,\tanh(W_1\bar h_{16}(x))\big),
+\]
+about 57k parameters, trained with binary cross-entropy on z-scored states.
+The training pool is 144 sentences: 36 templates (18 critical, 18 trivial), each filled with 4 draws from 12 invented names.
+None of those names appear in Kalandor-100.
+Two templates (a shellfish allergy, a card PIN) nearly repeat test categories; the implicit-danger facts have no close template.
+Section~\ref{sec:e7} shows a linear probe matches this network, including after those two templates are removed.
+Sections~\ref{sec:e10} and~\ref{sec:e11} therefore use logistic regression on the z-scored layer-6 mean residual, trained on the cleaned pool (136 sentences).
+Section~\ref{sec:e15} re-runs the fixed top-30 night of Section~\ref{sec:e5b} with that cleaned layer-6 linear, a cleaned layer-16 linear, and the original full-pool layer-16 MLP in one grid (plus random and oracle); the 144-vs-136 pool split is intentional and reported.
+Section~\ref{sec:e16} freezes those probes and scores an independent out-of-template exam against MiniLM, e5, and TF-IDF.
+Sections~\ref{sec:e17}--\ref{sec:e17b} switch the probe on after a separate LoRA write of person risks and ask whether related sentences become readable without putting those risks in the prompt.
+
+\paragraph{Gates.}
+Every sleep mode has the same budget $k{=}12$.
+They differ in the salient set and in the per-example weight.
+Random draws 12 already-seen facts and weights them by 1.
+Replay-forgotten quizzes every seen fact against the stored answer and replays failures, with no importance score, again at weight 1: up to $\mathrm{round}(0.75k){=}9$ failures, then random seen facts to fill the quota.
+Probe, surprise, and oracle build a salient set, quiz only that set, replay up to 9 salient facts the model currently misses, and fill the rest at random from anything already seen.
+Their default training weight is $w(x)=0.3+0.7\,S(x)$; Section~\ref{sec:e12} holds the salient set fixed and compares that mix to uniform and $S$-only weights.
+In the original world the salient set is the global top-30.
+That quota equals the number of critical facts, which is a form of oracle information about $N$.
+Surprise replaces $S$ by the answer's negative log-likelihood under the base model, normalised to $[0,1]$.
+Oracle replaces $S$ by the true label.
+
+The streaming gate used in Section~\ref{sec:e11} never ranks the whole benchmark.
+On each day it keeps the top 3 of that day's 10 facts and adds them to the salient set.
+Replay then follows the same mastery rule on the salient facts seen so far.
+The lexical control uses the same top-3-per-day rule with TF-IDF logistic scores.
+A streaming oracle keeps the top 3 true criticals of the day, so it has the same daily quota and does not pack a global top-30.
+Random streaming keeps 3 facts of the day at random.
+
+\paragraph{Benchmark and scoring.}
+Kalandor-100 is 10 invented people $\times$ 10 Spanish template facts, in a fixed shuffled order, learned over 10 nights.
+Thirty facts are critical: 10 allergies, 10 implicit dangers with no alarm words (``the ice on the pond where Gael skates is very thin''), and 10 legal or financial deadlines.
+Seventy are trivial, including 10 traps that use medical, financial, or travel words for a trivial fact, and 20 high-use ``popular'' trivia items (pets and favourite foods).
+Retention is scored after night 10 by greedy decoding and a normalised keyword match.
+General knowledge is 15 capital-city questions; the base model scores 12/15.
+The regenerated worlds in Section~\ref{sec:e11} keep this template and resample names and facts from the same banks (world seeds 101, 202, 303).
+They are not a change of style.
+
+\section{Results}
+
+\subsection{The anchor, then the 30-fact pilot}
+\label{sec:pilots}
+
+The $\lambda{=}1$, 28-pass night used everywhere below was chosen in the KL-anchor pilot, one seed, on the early 30-fact set (10 critical), before any importance gate.
+With no anchor, capitals fall from the base 12/15 to 6/15 at 28 passes (4/10 criticals, total 15/30) and to 5/15 at 10 passes (0/10 criticals, total 5/30).
+An anchor with only 10 passes holds culture at 10/15 and barely learns: $\lambda{=}0.5$ retains 1/10 criticals (total 6/30), $\lambda{=}1$ retains 0/10 (total 4/30).
+$\lambda{=}1$ and 28 passes is the compromise that was locked: 3/10 criticals, total 14/30, culture 9/15.
+No cell met both design targets at once (culture $\geq 10/15$ and total $\geq 18/30$) under random replay.
+The anchor and the step count can coexist; neither one alone was enough, and the missing piece was the quota, not a softer anchor.
+
+The first on/off with a LoRA judge uses three seeds, five nights, $k{=}4$, and that same anchor.
+The scorer is a LoRA judge, not the residual probe.
+Random replay retains $2.7{\pm}0.5$ of 10 criticals; the judge retains $7.0{\pm}0.8$, and every seed moves the same way ($+5,+3,+5$).
+Total does not rise ($13.7{\pm}0.9$ vs.\ $13.3{\pm}0.5$) and culture is $9.3{\pm}0.9$ either way.
+The gate reallocates the four replay slots.
+
+The surprise pilot reuses those off and on runs and adds surprise on the same 30-fact set.
+Before any update the judge places 10/10 criticals in its top 10 (AUROC 1.00); answer-loss surprise places 2/10 (AUROC 0.54).
+After sleep, surprise retains $2.0{\pm}0.8$ criticals, below random, while the judge stays at $7.0{\pm}0.8$.
+Culture under surprise is $9.7{\pm}0.5$.
+The line this pilot supports, and that Kalandor-100 then tests, is that surprise keeps what is rare and the importance score keeps what is critical.
+
+\subsection{The residual separates criticality; surprise collects traps}
+\label{sec:selector}
+
+Before any LoRA update, a selector audit on the fixed world (Table~\ref{tab:selector}) scores the layer-16 probe at AUROC 0.99, with 28 of 30 criticals in its top 30, all 10 implicit dangers, and none of the 10 traps.
+Surprise scores AUROC 0.53, with 8 of 30 criticals and 8 of 10 traps in its top 30.
+The main consolidation setup ($k{=}12$), which retrains the same probe, records the same headline: probe AUROC 0.99 (28/30) and surprise AUROC 0.53, again with 8 traps in the surprise top 30.
+A linear probe at layer~6 later reaches Kalandor AUROC 0.999 with 29/30 criticals in its top 30 (Section~\ref{sec:e15}; cf.\ Section~\ref{sec:e10}); that 0.999 is benchmark/holdout AUROC, not training-pool AUROC.
+The representation result is not an artefact of the hidden layer in $S(x)$.
+
+\begin{table}[t]
+\centering
+\caption{Pre-sleep ranking on Kalandor-100. Probe and surprise rows are the first full-benchmark selector audit ($k{=}4$); the $k{=}12$ consolidation setup reports the same probe AUROC 0.99 (28/30) and surprise AUROC 0.53 with 8 traps in its top 30.}
+\label{tab:selector}
+\small
+\begin{tabular}{lccc}
+\toprule
+Selector & AUROC & Critical in top 30 & Traps in top 30 \\
+\midrule
+Probe (layer 16) & 0.99 & 28/30 & 0/10 \\
+Surprise (answer NLL) & 0.53 & 8/30 & 8/10 \\
+Oracle & 1.00 & 30/30 & 0/10 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Same replay budget, different gate}
+\label{sec:e5b}
+
+Figure~\ref{fig:e5b} and Table~\ref{tab:e5b} are the main consolidation result: $k{=}12$, $r{=}8$, $\lambda{=}1$, layer-16 probe, three seeds.
+The probe retains $20.3{\pm}1.2$ critical facts.
+Random retains $12.7{\pm}1.7$, replay-forgotten $14.3{\pm}2.4$, surprise $10.3{\pm}1.2$, and the oracle $19.0{\pm}1.6$.
+Per seed, probe minus random is $+7,+5,+11$ (mean $+7.7$) and probe minus replay-forgotten is $+8,+4,+6$ (mean $+6.0$).
+Probe minus oracle is $0,-1,+5$ (mean $+1.3$).
+At $n{=}3$ the signed gaps are descriptive only: probe minus random and probe minus replay-forgotten are positive in every seed, while probe minus oracle flips sign.
+Replay-forgotten minus random is a small mean gain ($+1.7$); surprise minus random is negative (mean $-2.3$).
+We do not treat these three-seed contrasts as confirmatory significance tests.
+
+The gain is in the categories that define criticality.
+Mean allergy retention rises from 2.3 (random) to 6.3 (probe), and deadlines from 4.7 to 6.7; implicit dangers, already the strongest slice under random (5.7), move to 7.3.
+Surprise instead retains more of the traps (mean 5.7).
+Popular trivia falls slightly relative to random (4.3 vs.\ 5.3 out of 20): the quota is being spent on the critical slice, not on a general memory boost.
+Total retention (probe $35.7{\pm}1.7$ vs.\ random $32.0{\pm}4.3$) sits within that noise.
+Capital-city accuracy stays in the noise of a 15-question test (probe $8.3{\pm}1.7$ vs.\ random $9.3{\pm}0.9$), with one low seed (6/15) that we do not average away.
+The base model scores 12/15, so every mode pays something; none collapses.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.92\linewidth]{fig-e5b-retention.pdf}
+\caption{Critical facts retained after 10 nights on Kalandor-100. Bars are means over seeds $\{0,1,2\}$; points are the seeds. Every mode replays $k{=}12$ facts a night. At $n{=}3$ the probe is not distinguishable from the oracle. Surprise is below random.}
+\label{fig:e5b}
+\end{figure}
+
+\begin{table}[t]
+\centering
+\caption{Consolidation retention, mean $\pm$ standard deviation over three seeds ($k{=}12$, layer-16 probe). Popular items are 20 high-use trivia facts. Culture is 15 capitals (base model 12/15).}
+\label{tab:e5b}
+\small
+\begin{tabular}{lccccc}
+\toprule
+Mode & Crit./30 & Impl./10 & Pop./20 & Total/100 & Cult./15 \\
+\midrule
+Random & $12.7{\pm}1.7$ & $5.7{\pm}0.9$ & $5.3{\pm}1.2$ & $32.0{\pm}4.3$ & $9.3{\pm}0.9$ \\
+Replay-forgotten & $14.3{\pm}2.4$ & $6.7{\pm}1.7$ & $6.3{\pm}1.2$ & $34.0{\pm}2.4$ & $8.0{\pm}0.8$ \\
+\textbf{Probe} & $\mathbf{20.3{\pm}1.2}$ & $7.3{\pm}0.5$ & $4.3{\pm}1.2$ & $35.7{\pm}1.7$ & $8.3{\pm}1.7$ \\
+Surprise & $10.3{\pm}1.2$ & $5.3{\pm}2.1$ & $3.3{\pm}0.5$ & $33.3{\pm}2.9$ & $9.0{\pm}0.8$ \\
+Oracle & $19.0{\pm}1.6$ & $8.0{\pm}1.4$ & $3.3{\pm}0.9$ & $30.0{\pm}2.8$ & $8.7{\pm}0.5$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Kalandor-100 at the old quota \texorpdfstring{$k{=}4$}{k=4}}
+\label{sec:e3}
+
+The first full-benchmark sleep moves to the 100-fact set at the old quota ($k{=}4$, $\lambda{=}1$, 28 passes, three seeds).
+The residual probe retains $11.0{\pm}1.6$ criticals, the LoRA judge $10.7{\pm}1.7$, the oracle $11.7{\pm}1.7$, random replay $8.3{\pm}0.5$, and surprise $8.0{\pm}2.4$.
+Against random, that is $+2.7$ for the probe, $+2.4$ for the judge, $+3.4$ for the oracle, and $-0.3$ for surprise.
+Surprise also lowers capitals ($7.7{\pm}0.5$ vs.\ $9.0$ for random); the probe does not ($9.7{\pm}0.5$).
+The in-model probe tracks the judge and sits near the oracle, and the ceiling is still about 12/30.
+Selecting well does not help if the night only has four slots.
+
+\subsection{Capacity sweep: the budget was the bottleneck}
+\label{sec:e5a}
+
+The capacity sweep is a one-seed oracle sweep on Kalandor-100.
+Raising $k$ from 4 to 12 lifts criticals from 14 to 20 and leaves capitals at 8/15.
+LoRA rank $r{=}32$ at $k{=}4$ reaches only 16.
+Weakening the anchor to $\lambda{=}0.5$ drops criticals to 11 and capitals to 5/15.
+At $k{=}12$, replaying salient failures until mastery reaches 19 criticals, culture 9/15, and the highest total of the sweep (34/100).
+Day~10 is recalled 10/10 in every configuration, five of them critical.
+The model learns the latest night.
+Earlier nights are what the quota protects.
+The $k{=}12$, $r{=}8$, $\lambda{=}1$ setting in Section~\ref{sec:e5b} is this sweep's winner, re-run with the probe and the controls.
+
+\subsection{Criticality is linearly decodable on this template set}
+\label{sec:e7}
+
+A forward-only sweep (no LoRA) fits a linear probe and the original one-hidden-layer probe at every layer of Qwen2.5 0.5B, 1.5B, 3B, and 7B.
+The linear probe matches the MLP.
+On 0.5B the best linear layer under the (optimistic) same-exam pick is layer~6 (relative depth 0.25), with Kalandor AUROC 0.999 (not the cleaned training-pool AUROC) and 0 of 10 Kalandor traps in the top of the ranking under the layer map.
+Layer~16, the layer used for the sleep runs, sits in the same plateau at AUROC 0.995.
+It is a valid readout, not a unique locus.
+The argmax jumps with scale (layer 27 of 28 on 1.5B, 12 of 36 on 3B, 11 of 28 on 7B) because the curve is flat: cleaned AUROC stays at 1.00, and label shuffles fall to about 0.46--0.57.
+An L1-penalised linear probe at the best layer uses roughly 18--22 coordinates out of 896--3584 and still scores AUROC 0.95--0.98.
+Criticality, on this template set, is a low-dimensional linearly decodable direction of the residual, readable across depth and from 0.5B to 7B; that is not yet a claim that the same holds off-template.
+Sleep retention was measured only at 0.5B.
+Table~\ref{tab:e7} is the map, not a claim that a 7B model consolidates the same way.
+An earlier leave-one-family holdout without a tie-break picked layer~0 whenever validation AUROC tied at 1.0---an artefact of first-index wins, not evidence that the embedding layer is best.
+Section~\ref{sec:e13} re-runs that holdout with a non-tied preference for layers $\{6,16\}$.
+The optimistic same-exam layer choices in Table~\ref{tab:e7} remain the map of the plateau; sleep probes stay the fixed layer-6 and layer-16 readouts.
+
+\begin{table}[t]
+\centering
+\caption{Layer sweep, cleaned linear probe. ``Best layer'' is the argmax of a plateau, not a sharp site. L1 is fit at that layer with $C{=}0.1$. Traps are Kalandor counts for the unpenalised cleaned probe, not training-pool AUROC.}
+\label{tab:e7}
+\small
+\begin{tabular}{lcccccc}
+\toprule
+Model & Layers & Best & Depth & AUROC & Traps & L1 dims (AUROC) \\
+\midrule
+0.5B & 24 & 6 & 0.25 & 1.00 & 0/10 & 20/896 (0.95) \\
+1.5B & 28 & 27 & 0.96 & 1.00 & 0/10 & 22/1536 (0.96) \\
+3B & 36 & 12 & 0.33 & 1.00 & 0/10 & 18/2048 (0.97) \\
+7B & 28 & 11 & 0.39 & 1.00 & 0/10 & 19/3584 (0.98) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Family holdout with a non-tied layer pick}
+\label{sec:e13}
+
+The leave-one-template-family holdout asks whether linear criticality survives when one essential template family is held out and the layer is chosen on an in-fold validation split of the cleaned training pool---never by argmax on Kalandor.
+Negatives for the holdout exam are trivial sentences reserved in-fold.
+When several layers tie within $10^{-6}$ of the best validation AUROC, the pick prefers $\{6,16\}$ (6 before 16); if neither is tied, it takes the median of the tied set, so a saturated validation curve cannot default to layer~0.
+No LoRA and no \texttt{peft}: forward passes and tiny probes only, on Qwen2.5-0.5B-Instruct.
+Sixteen critical families give sixteen folds.
+
+Mean held-out-family AUROC is $0.953{\pm}0.182$; Kalandor AUROC at the frozen $\ell^*$ is $0.992{\pm}0.007$; every fold's $\ell^*$ is layer~6 (Table~\ref{tab:e13}).
+Label shuffles at layer~6 sit near $0.4$--$0.6$.
+One outlier fold, \texttt{no\_nadar}, scores holdout AUROC $0.25$; on that fold the fixed layer-16 control ranks higher (holdout $0.75$), the reverse of the L6-majority pattern.
+Without that fold the holdout mean is about $1.0$.
+The family ceiling on this template pool remains high.
+The preference for $\{6,16\}$ is a selection rule, not evidence that layer~6 is a unique locus, and the fold is not a paraphrase or human-prose test.
+Fixed layer-6 and layer-16 linear controls remain the sleep readouts that Section~\ref{sec:e15} compares under one night.
+
+\begin{table}[t]
+\centering
+\caption{Leave-one-template-family-out linear holdout on the cleaned pool (16 folds). Layer pick is validation-split AUROC with ties broken toward $\{6,16\}$.}
+\label{tab:e13}
+\small
+\begin{tabular}{lc}
+\toprule
+Metric & Value \\
+\midrule
+Holdout AUROC (mean $\pm$ sd) & $0.953{\pm}0.182$ \\
+Kalandor AUROC at $\ell^*$ & $0.992{\pm}0.007$ \\
+$\ell^*$ & layer 6 in all 16 folds \\
+Outlier fold \texttt{no\_nadar} holdout & $0.25$ (L16 control $0.75$) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Ablating the probe direction collapses ranking (interim)}
+\label{sec:e9}
+
+At layer~6, subtracting the probe's criticality direction from the residual,
+\[
+h \leftarrow h - \alpha\,(h\cdot\hat w_{\mathrm{crit}})\,\hat w_{\mathrm{crit}},
+\]
+drops probe AUROC from 1.00 to 0.50 at $\alpha{=}1$ and to 0.00 at $\alpha{=}2$ (Figure~\ref{fig:e9}).
+A direction from a label-shuffled probe, and a random direction orthogonal to $\hat w_{\mathrm{crit}}$, leave AUROC at 1.00 for $\alpha\in\{1,2,4\}$, even when the orthogonal edit moves the residual by a large L2 amount.
+The same pattern holds at layer~16 (ablation at $\alpha{=}1$ yields AUROC 0.50; controls stay near 0.99) and at layer~1 (0.48 vs.\ about 0.95).
+Adding the direction back onto trivial facts saturates scores and also collapses AUROC toward 0.5, so the useful claim is specificity of the ablation, not a steering demo.
+At $\alpha{=}1$ the top of the ranking can still look intact because many scores tie near 1; AUROC, not the top-12 count, is the measurement.
+Until a refit-after-ablation probe is run, this is a sanity check that the frozen probe's score depends on that direction, not a necessity claim for the representation, and not evidence that the generative model consults that vector when it answers.
+Section~\ref{sec:e14} is that stronger test: iterative nullspace projection with a freshly trained probe at each step.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.92\linewidth]{fig-e9-ablation.pdf}
+\caption{Interim ablation, layer 6 of Qwen2.5-0.5B. Ablating the probe direction removes criticality ranking for the frozen probe; a shuffled direction and an orthogonal direction do not. Shuffle and orthogonal AUROC stay at 1.00 for $\alpha$ from 1 to 4; the bars show $\alpha{=}1$.}
+\label{fig:e9}
+\end{figure}
+
+\subsection{Fresh probes recover under iterative nullspace}
+\label{sec:e14}
+
+The ablation of Section~\ref{sec:e9} removes the direction the frozen probe already uses.
+A stronger test projects that direction out of the mean-pooled residual, retrains a linear probe on the cleaned pool, and repeats---INLP-style Gram--Schmidt stacking at $\alpha{=}1$, up to 12 iterations---asking whether Kalandor AUROC falls to chance.
+Layers 6 and 16 are run side by side; conditions are the criticality direction, a label-shuffled direction, and three random directions.
+No LoRA and no \texttt{peft}.
+
+Both layers return \textbf{fail/flat}.
+At layer~6 the criticality curve declines only to about $0.67$--$0.90$ across eleven projections and never reaches chance ($|{\rm AUROC}-0.5|\leq 0.05$).
+At layer~16 the curve stays about $0.94$--$0.98$.
+Shuffle and random controls remain near $0.99$.
+A fresh probe recovers ranking after many nullspace steps: criticality on this template set is not a single linear direction whose removal is necessary for a new readout.
+We keep the recoverable / multi-direction wording and do not upgrade to a strong ``distributed representation'' claim.
+That ablation stays an interim sanity check on the frozen score; it is not a causal or necessity claim for generation, and Section~\ref{sec:e15} does not depend on closing that gap.
+
+\subsection{Lexical and prompting controls}
+\label{sec:e10}
+
+Figure~\ref{fig:e10} and Table~\ref{tab:e10} compare the layer-6 linear probe with readouts that never see a residual: logistic regression on TF-IDF and on bag-of-words (unigrams and bigrams), a linear probe on the embedding layer, and zero- and few-shot yes/no prompts to the same frozen model.
+Layer~6 was picked on the same Kalandor exam in the layer sweep; TF-IDF and bag-of-words had no such layer selection.
+The probe scores Kalandor AUROC 0.999 (not training-pool AUROC) and retrieves 29 of 30 criticals in its Kalandor top 30, with all 10 implicit dangers and no traps.
+Embeddings reach 0.903, TF-IDF 0.796, bag-of-words 0.746.
+There is lexical signal.
+It does not account for the ceiling on this template set, and it does let two traps into the TF-IDF and bag-of-words top 30.
+Asking the model outright is near chance: zero-shot AUROC 0.513, few-shot (two critical and two trivial demonstrations) 0.596.
+A label shuffle of the layer-6 probe falls to 0.542.
+The ranking that the layer-16 MLP sleep probe and the layer-6 linear sweep both measured is not keyword matching and not verbal self-report on this template set---two probes, not one shared readout.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.92\linewidth]{fig-e10-auroc.pdf}
+\caption{AUROC for criticality on Kalandor-100. The layer-6 linear probe (same-exam layer pick) is above embeddings, TF-IDF, bag-of-words, and yes/no prompting of the same model; TF-IDF and bag-of-words have no layer to select. The dashed line is chance. The shuffle bar is a control, not a competing gate.}
+\label{fig:e10}
+\end{figure}
+
+\begin{table}[t]
+\centering
+\caption{Retrieval in the top 30 alongside AUROC. Implicit dangers are a subset of the 30 criticals. Shuffled rows are training-label controls. Layer~6 was exam-picked; lexical rows were not.}
+\label{tab:e10}
+\small
+\begin{tabular}{lcccc}
+\toprule
+Readout & AUROC & Crit.@30 & Impl.@30 & Traps@30 \\
+\midrule
+\textbf{Linear, layer 6} & $\mathbf{1.000}$ & $\mathbf{29}$ & 10 & 0 \\
+Linear, layer 0 & 0.903 & 21 & 5 & 0 \\
+TF-IDF logistic & 0.796 & 20 & 9 & 2 \\
+Bag-of-words logistic & 0.746 & 18 & 7 & 2 \\
+Few-shot yes/no & 0.596 & 14 & 2 & 2 \\
+Zero-shot yes/no & 0.513 & 15 & 1 & 3 \\
+Layer 6, shuffled labels & 0.542 & 8 & 1 & 1 \\
+TF-IDF, shuffled labels & 0.650 & 10 & 4 & 1 \\
+Bag-of-words, shuffled labels & 0.600 & 8 & 3 & 2 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Streaming selection without knowing \texorpdfstring{$N$}{N}}
+\label{sec:e11}
+
+The global top-30 used above knows that thirty facts are critical.
+A streaming probe does not.
+On three regenerated worlds, still the same templates, the layer-6 linear probe scores AUROC 0.997--1.000.
+Selecting the top 3 facts of each day recovers $25.0{\pm}0.8$ criticals out of 30 (26, 24, and 25 on worlds 101, 202, and 303).
+A global oracle top-30 recovers $29.0{\pm}0.8$.
+The same daily rule with TF-IDF recovers $16.0{\pm}1.4$ (Figure~\ref{fig:e11a}).
+The four-fact gap against the oracle is the days that contain more than three criticals: the gate cannot go back.
+Top-2 per day falls to $19.0{\pm}0.8$.
+A fixed threshold at the 70th percentile of the training scores, with no daily quota, selects only $4.7{\pm}0.9$ criticals and is not a usable gate without recalibration.
+We keep top-$k$ per day.
+
+Two caveats sit next to the selection win.
+Worlds are template-isomorphic: new names, same banks.
+And the streaming top-3 still admits 2 to 4 of the 10 lexical traps (world 202 is the worst), while implicit dangers stay near 8 of 10.
+Global top-30 on the original world had admitted no traps.
+The online quota is leakier.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.98\linewidth]{fig-e11a-selection.pdf}
+\caption{Critical facts selected out of 30, no LoRA. Each bar is one regenerated world. Stream and TF-IDF see only the current day and keep three facts; the oracle ranks all 100 at once. Means: oracle 29.0, stream 25.0, TF-IDF 16.0.}
+\label{fig:e11a}
+\end{figure}
+
+\subsection{Retention after streaming sleep}
+\label{sec:e11b}
+
+Selection is not retention.
+We re-ran the ten-night LoRA schedule of Section~\ref{sec:e5b} with the streaming salient set and a layer-6 linear probe, one sleep seed, three worlds (Figure~\ref{fig:e11b}, Table~\ref{tab:e11b}).
+Probe streaming retains 18.3 of 30 criticals (18, 20, 17).
+Random streaming retains 12.7 (12, 10, 16)---the same mean as global random in Section~\ref{sec:e5b}, from a separate three-world streaming protocol, not a shared run.
+TF-IDF streaming retains 16.7 (18, 18, 14).
+A streaming oracle with the same top-3-per-day quota retains 21.0 (20, 21, 22).
+Of the criticals each gate had selected, the probe keeps 17.0 of 25.0, TF-IDF 13.3 of 16.0, the oracle 18.7 of 25.0, and random 7.7 of 9.3.
+By night 10 every fact has been seen, so retained-among-seen and the full 30 coincide.
+
+With one sleep seed, the largest contrast is stream against random, $+5.6$ criticals.
+Stream against TF-IDF is $+1.6$ on the three-world mean, a tie on world 101, and a lead on 202 and 303.
+That is much smaller than the selection gap (25 vs.\ 16).
+Random sleep already holds 12.7 criticals, and both gates then push their selections through the same mastery quota, so a large ranking advantage has only a few points of room left at $k{=}12$.
+Section~\ref{sec:e12} separates selection from the $0.3{+}0.7\,S$ loss mix under a fixed streaming set: there is no evidence the mix helps.
+Capitals stay near 9--10/15 (base 12).
+The anchor still prevents a collapse of general knowledge.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.92\linewidth]{fig-e11b-retention.pdf}
+\caption{Critical facts retained after ten nights with a layer-6 linear streaming probe. Bars are means over worlds 101, 202, and 303 at sleep seed 0. Points are the worlds. The streaming oracle uses the same top-3-per-day quota as the probe, not the global top-30 of Figure~\ref{fig:e11a}.}
+\label{fig:e11b}
+\end{figure}
+
+\begin{table}[t]
+\centering
+\caption{Streaming sleep retention with a layer-6 linear probe, mean over three worlds, sleep seed 0. ``Selected'' is criticals admitted by the gate before sleep. Retained is the post-sleep exam over all 30 criticals.}
+\label{tab:e11b}
+\small
+\begin{tabular}{lccc}
+\toprule
+Gate & Selected /30 & Retained /30 & Capitals /15 \\
+\midrule
+\textbf{Probe stream} & 25.0 & $\mathbf{18.3}$ & 9.3 \\
+Random stream & 9.3 & 12.7 & 8.7 \\
+TF-IDF stream & 16.0 & 16.7 & 9.7 \\
+Oracle, top-3/day & 25.0 & 21.0 & 9.3 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Streaming TF-IDF margin under seed noise}
+\label{sec:e11c}
+
+The three-world mean above is one sleep seed.
+On world 101 we repeated probe streaming and TF-IDF streaming at seeds $\{0,1,2\}$ (Figure~\ref{fig:e11c}).
+Retained criticals are $(18, 17, 18)$ for the probe and $(18, 18, 16)$ for TF-IDF: means $17.7{\pm}0.6$ and $17.3{\pm}1.2$, margin $+0.3{\pm}1.5$.
+The margin changes sign across seeds.
+It is compatible with zero.
+Streaming criticality beats random sleep by a clear margin on the worlds we ran; against a TF-IDF gate with the same quota, the multi-world mean is a small lead and the single-world seed bar is a tie.
+A full world-by-seed grid is future work.
+The three-world one-seed retention and this seed bar are not that grid.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{fig-e11c-seeds.pdf}
+\caption{World 101 only. Left: criticals retained by seed. The probe and TF-IDF trade places (tie, TF-IDF ahead, probe ahead). Right: the signed margin. The reported means are $17.7{\pm}0.6$ and $17.3{\pm}1.2$ (sample standard deviation, $n{=}3$).}
+\label{fig:e11c}
+\end{figure}
+
+\subsection{Nocturnal loss mix under a fixed streaming gate}
+\label{sec:e12}
+
+The probe, surprise, and oracle schedules above train salient facts with $w(x)=0.3+0.7\,S(x)$.
+That mix is a modelling choice, not a measured necessity.
+On world 101 we froze the streaming top-3-per-day salient set once, reused the same ten nightly replay lists under a shared plan, turned off the forgetting quiz so the lists could not diverge, and varied only the per-example loss weight (Table~\ref{tab:e12}).
+The default mix retains 14 of 30 criticals and 10/15 capitals.
+Uniform weights and $w(x)=S(x)$ each retain 17/30, with culture at 9--10/15.
+Selection was held fixed here, so this ablation does not vary the gate: there is no evidence that nocturnal weighting $0.3{+}0.7\,S$ helps over uniform or $S$-only weights.
+Any credit for which facts get into the salient set comes from the selection and retention experiments above, not from this loss-mix cell.
+The absolute counts sit below the streaming world-101 probe run (18/30) because that schedule re-quizzes forgotten salient facts, whereas this ablation holds the replay lists fixed.
+
+\begin{table}[t]
+\centering
+\caption{World 101, sleep seed 0, fixed \texttt{stream\_topk} selection (no forgetting quiz). Criticals retained after ten nights; capitals out of 15 (base 12).}
+\label{tab:e12}
+\small
+\begin{tabular}{lcc}
+\toprule
+Loss weight & Criticals /30 & Capitals /15 \\
+\midrule
+$0.3{+}0.7\,S$ & 14 & 10 \\
+Uniform ($w{=}1$) & \textbf{17} & 9 \\
+$S$ only & \textbf{17} & 10 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Fixed top-30 sleep: three probes, one night}
+\label{sec:e15}
+
+Sections~\ref{sec:e5b} and~\ref{sec:e11b} split the story: a layer-16 MLP under a global top-30, and a layer-6 linear under streaming.
+Here the night is the protocol of Section~\ref{sec:e5b} again---fixed Kalandor-100 world, global top-30 salience, mastery fill, $k{=}12$, LoRA $r{=}8$, KL $\lambda{=}1$, 28 AdamW passes at $5{\times}10^{-5}$ on \texttt{q\_proj}/\texttt{v\_proj}---and the gate varies only by which probe fills the salient set.
+There is \textbf{no streaming}.
+Modes run together: layer-6 linear, layer-16 linear, layer-16 MLP, random, and oracle, seeds $\{0,1,2\}$ in seed-major order.
+\texttt{peft} is required for this LoRA grid (unlike the probe-only holdout and nullspace runs).
+Probes and z-scoring fit on the training pool only, on the base model with the adapter off.
+Salient facts use $w(x)=0.3+0.7\,S(x)$ as in Section~\ref{sec:e5b}; random is the same unweighted baseline.
+A documented pool confound remains: the MLP trains on the full 144-sentence pool (to near-replicate Section~\ref{sec:e5b}), while both linears use the cleaned 136-sentence pool of Sections~\ref{sec:e7} and~\ref{sec:e10}.
+That 144-vs-136 mismatch does not change the global parity of the retention results: the linears still sit within about one critical of the same-run MLP.
+
+Pre-sleep, with the adapter off, the layer-6 linear scores AUROC 0.999 (29/30 criticals in the top 30, 1 trap), the layer-16 linear 0.988 (27/30, 0 traps), and the layer-16 MLP 0.990 (28/30, 0 traps); oracle is 30/30 by label.
+Top-30 overlap versus the oracle set is 29, 27, and 28 respectively.
+Detection is not the bottleneck.
+
+After ten nights, mean criticals retained are $18.3{\pm}2.5$ (L6 linear), $18.7{\pm}3.5$ (L16 linear), $19.3{\pm}1.5$ (L16 MLP), $12.7{\pm}0.6$ (random), and $20.7{\pm}3.1$ (oracle); per-seed cells are in Table~\ref{tab:e15} and means for the other slices in Table~\ref{tab:e15b}.
+Paired seed-wise gaps versus random are $+3,+9,+5$ (L6, mean $+5.7$), $+6,+10,+2$ (L16 linear, $+6.0$), and $+5,+9,+6$ (L16 MLP, $+6.7$); oracle minus random is $+5,+8,+11$ (mean $+8.0$).
+Linears sit within about one critical of the same-run MLP (L6 minus MLP: $-2,0,-1$; L16 linear minus MLP: $+1,+1,-4$).
+Against the oracle, seeds 0--1 are near parity and seed~2's oracle cell (24/30) pulls the oracle mean to 20.7; L16 MLP minus oracle is $0,+1,-5$ (mean $-1.3$).
+Pipeline check against Section~\ref{sec:e5b}: same-run L16 MLP mean 19.3 versus historical 20.3, and random 12.7 versus 12.7, both inside a $\pm 3$ tolerance---so the linear cells are compared to this run's MLP, not only to the older headline.
+We report the linears even though they match the MLP: the consolidation claim is not MLP-only.
+
+Implicit dangers stay high under the probes (means 7.3, 6.7, 7.3 out of 10) while popular trivia falls relative to random (3.3--4.0 vs.\ 6.3 out of 20).
+Total retention sits near 31--32/100 across modes.
+Culture pays a shared tax: capitals fall from the base 12/15 to about 8--9 in every arm, including the oracle (L6 linear 7.7, others 8.7--9.3), under the same KL anchors.
+The residual gap to the oracle is sleep and capacity under a fixed quota, not ranking: AUROCs are already $\geq 0.988$ and top-30 sets nearly match the label set.
+The nullspace result of Section~\ref{sec:e14} is unchanged by this grid; the ablation remains non-causal.
+
+\begin{table}[t]
+\centering
+\caption{Fixed top-30 sleep, criticals retained out of 30, seeds $\{0,1,2\}$. Same night as Section~\ref{sec:e5b}; no streaming. Linears train on the cleaned 136-pool; MLP on full 144 (mismatch does not change global parity).}
+\label{tab:e15}
+\small
+\begin{tabular}{lcccc}
+\toprule
+Mode & Seed 0 & Seed 1 & Seed 2 & Mean $\pm$ sd \\
+\midrule
+L6 linear & 16 & 21 & 18 & $18.3{\pm}2.5$ \\
+L16 linear & 19 & 22 & 15 & $18.7{\pm}3.5$ \\
+L16 MLP & 18 & 21 & 19 & $19.3{\pm}1.5$ \\
+Random & 13 & 12 & 13 & $12.7{\pm}0.6$ \\
+Oracle & 18 & 20 & 24 & $20.7{\pm}3.1$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{Fixed top-30 sleep, mean over three seeds. Culture base model is 12/15 before any LoRA night.}
+\label{tab:e15b}
+\small
+\begin{tabular}{lccccc}
+\toprule
+Mode & Crit./30 & Impl./10 & Pop./20 & Total/100 & Cult./15 \\
+\midrule
+L6 linear & 18.3 & 7.3 & 3.3 & 32.3 & 7.7 \\
+L16 linear & 18.7 & 6.7 & 4.0 & 31.3 & 9.3 \\
+L16 MLP & 19.3 & 7.3 & 3.7 & 32.0 & 8.7 \\
+Random & 12.7 & 6.0 & 6.3 & 32.3 & 9.3 \\
+Oracle & 20.7 & 7.0 & 3.3 & 32.0 & 9.3 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Out of template: semantic, not lexical}
+\label{sec:e16}
+
+Sections~\ref{sec:e10}--\ref{sec:e11c} left a soft spot: on Kalandor templates, TF-IDF was weaker than the probe at ranking but close enough under streaming sleep that a lexical story remained open.
+An independent out-of-template exam addresses it.
+The probe is trained only on the cleaned Spanish template pool (136 sentences).
+The exam is 229 short person-fact sentences: 58 critical (30 explicit, 28 implicit) and 171 non-critical (141 trivial, 30 lexical traps), half Spanish and half English, in chat / note / mail / diary styles that are not Kalandor templates.
+The sentences and labels were generated by a commercial LLM (ChatGPT) that was shown the category definitions and none of our templates; a second LLM (Gemini) screened them, and the two sentences whose category it disputed were removed.
+Before any probe was scored we measured surface cues on the first 189 sentences (length alone AUROC 0.80, digit count 0.69) and asked the same generator for 40 further trivial sentences with dates, amounts and headers; digit count fell to 0.58, and length is handled by the matched subset below.
+Lexical baselines, which need no GPU, were computed during that step, so their values were known before launch; probe, encoder and 7B scores were not.
+The exam was then frozen and run once.
+No LoRA and no \texttt{peft}: forward passes, logistic probes, TF-IDF, and frozen sentence encoders only.
+Kalandor-100 remains an in-template reference; the claim below is the out-of-template column.
+
+On that exam the layer-6 linear probe scores AUROC 0.98; the layer-16 linear and the layer-16 MLP score 0.99; a linear probe on Qwen2.5-7B at layer~19 also scores 0.99; asking the 7B model for a 1--9 criticality score reaches 1.00.
+Multilingual MiniLM and multilingual e5-small match the probes at 0.99 (paired $\Delta$ vs.\ layer~6 has a confidence interval that touches zero).
+Word TF-IDF falls to 0.65; character TF-IDF to 0.79; sentence length alone to 0.75; asking the 0.5B model for a 1--9 score falls to 0.42 (Table~\ref{tab:e16}).
+Length-matched controls keep layer~6 at 0.98 while length alone drops to 0.59 and word TF-IDF to 0.64.
+By language, word TF-IDF is 0.52 on English and 0.82 on Spanish (training was Spanish only); probes, MiniLM, e5, and 7B stay at or above 0.98 in both languages.
+
+\begin{table}[t]
+\centering
+\caption{Out-of-template criticality AUROC on the 229-sentence exam (58 critical). Probes train on the cleaned Spanish template pool only. $\Delta$ is the layer-6 linear's AUROC minus the method's (negative: the method is ahead).}
+\label{tab:e16}
+\small
+\begin{tabular}{lcc}
+\toprule
+Method & AUROC & $\Delta$ vs L6 \\
+\midrule
+7B score 1--9 & 1.00 & $-0.02$ \\
+7B probe, layer 19 & 0.99 & $-0.01$ \\
+0.5B linear, layer 16 & 0.99 & $-0.01$ \\
+0.5B MLP, layer 16 & 0.99 & $-0.01$ \\
+e5-small & 0.99 & $-0.01$ \\
+MiniLM & 0.99 & $-0.01$ \\
+\textbf{0.5B linear, layer 6} & $\mathbf{0.98}$ & --- \\
+TF-IDF characters & 0.79 & $+0.19$ \\
+Sentence length & 0.75 & $+0.23$ \\
+TF-IDF words & 0.65 & $+0.33$ \\
+0.5B score 1--9 & 0.42 & $+0.56$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+This is the headline positive for the readout: when the words change, the probe and the semantic encoders keep criticality, and lexical TF-IDF does not.
+This is consistent with reading the narrow in-template margin over TF-IDF (Sections~\ref{sec:e10}--\ref{sec:e11c}) as a property of templates, where training and test share vocabulary; we have not run sleep off-template, so that reading is not yet tested on retention.
+The claim is recalibrated in the other direction as well: criticality is detectable out of template with semantic representations---Qwen residuals or off-the-shelf encoders---not a privilege of the 0.5B mid-layer residual over MiniLM, e5, or a 7B readout.
+Sleep gating in Section~\ref{sec:e15} still stands on its own (probe $\gg$ random); this exam bounds what kind of signal the probe is reading when the content is on the page.
+Two limits of the exam itself: it comes from a single LLM generator, and every semantic method sits at 0.98 or above, so it cannot rank the strong methods against each other.
+
+\subsection{Memory-conditioned criticality (pre-registered, weak)}
+\label{sec:e17}
+
+The exam above is about content that is already in the sentence.
+This section asks the harder case: the sentence is critical only given person risks that the model has stored in a LoRA, and trivial for a person who lacks those risks.
+The surface of the sentence is identical either way; MiniLM, e5, and TF-IDF see only that surface.
+
+Protocol (\texttt{peft} required). ``Pre-registered'' here means that the primary readout, the pass bar and the leak criterion were written in the header of the script before it was launched; there is no public registry entry.
+Forty-eight invented people each store two of twelve risk types in a LoRA on \texttt{Qwen2.5-0.5B-Instruct} ($r{=}16$, AdamW $10^{-4}$, KL $\lambda{=}1$; up to 30 epochs, stopped once recall of the stored risks reached 90\%, which took 20--25). This is one joint training run, not the ten-night schedule.
+Later the model reads new sentences: for each person, four that collide with risks they have (critical) and four that would collide with risks they do not (trivial); every risk type is critical as often as it is trivial inside each block of twelve people.
+A linear probe is fit with person-held-out cross-validation (four blocks of twelve): exam people never appear in the probe's training fold.
+The primary readout, fixed in advance, is adapter-on, layer~16, mean over tokens.
+Positive if the mean AUROC over three worlds $\{11,22,33\}$ is $\geq 0.65$ and every world is $>0.55$.
+Phrase-only controls (MiniLM, e5, TF-IDF) and adapter-off layer~16 must sit near 0.50; above ${\sim}0.60$ would be a design leak.
+Context-injection references (person facts written into the prompt; perfect external memory) are reported, not competitors.
+A recall gate on the stored risks must clear about 90\% before the AUROC is interpreted.
+
+Result: \textbf{weak} (Table~\ref{tab:e17}).
+Primary mean AUROC is $0.57{\pm}0.05$ (per world 0.64, 0.52, 0.56).
+Phrase-only controls are ${\sim}0.50$ (MiniLM 0.51, e5 0.49, TF-IDF 0.50); adapter-off layer~16 is 0.50---no leak.
+Recall of the stored risks is 92--93\%, so the adapter did store the facts.
+The context-injection reference on the base model at layer~16 is 0.90; MiniLM with the same context reaches only 0.64.
+A descriptive last-token readout at layer~16 scores 0.62 on the same run and does not decide the verdict.
+The pre-registered bar is not met.
+We publish the weak / near-negative result cleanly: at 0.5B there is no strong evidence that a linear probe reads pure parametric LoRA memory for related risk sentences without explicit context.
+Recovery into context does solve the task; the parametric route does not, on this protocol.
+
+\begin{table}[t]
+\centering
+\caption{Memory-conditioned criticality, mean AUROC over worlds $\{11,22,33\}$. Primary cell is adapter-on, layer~16, mean pool. Pre-registered positive bar: mean $\geq 0.65$ and all worlds $>0.55$.}
+\label{tab:e17}
+\small
+\begin{tabular}{lc}
+\toprule
+Method & AUROC \\
+\midrule
+\textbf{Adapter on, L16 mean (primary)} & $\mathbf{0.57{\pm}0.05}$ \\
+Adapter on, L16 last token (descriptive) & 0.62 \\
+Adapter off, L16 & 0.50 \\
+MiniLM / e5 / TF-IDF (phrase only) & 0.51 / 0.49 / 0.50 \\
+Context in prompt, base L16 & 0.90 \\
+Context in prompt, MiniLM & 0.64 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Last-token preregistration confirms the weak readout}
+\label{sec:e17b}
+
+A natural objection to the previous section is pooling: maybe the last token carries the LoRA-conditioned signal and the mean dilutes it.
+A second run reuses the same person-risk design on fresh worlds $\{44,55,66\}$, keeps the same LoRA night and the same person-held-out probe, and changes only the pre-registered primary readout to layer~16 last token.
+The positive bar is again mean $\geq 0.65$ with every world $>0.55$; phrase-only and adapter-off last-token controls must stay near 0.50; recall below 90\% would make the run inconclusive before any claim.
+
+Result: again \textbf{weak}.
+Last-token primary AUROC is $0.57{\pm}0.02$ (per world 0.59, 0.53, 0.57).
+Phrase-only / adapter-off controls sit near 0.49.
+Recall is 92\% / 93\% / 91\%.
+The context-injection last-token reference is 0.99: with the facts in the prompt the task is almost trivial; with the facts only in the adapter it is not.
+The second run therefore confirms the first rather than rescuing it.
+At 0.5B, even a last-token readout of LoRA-stored person risk on held-out related sentences does not clear the pre-registered bar.
+The paper's positive claim stays where Sections~\ref{sec:e15}--\ref{sec:e16} put it: content-evident criticality in residuals (and in semantic encoders) gates sleep.
+The paper's negative boundary is Sections~\ref{sec:e17}--\ref{sec:e17b}: do not claim that the probe reads pure parametric LoRA memory for related risk sentences without explicit context.
+
+\section{Discussion}
+
+The consolidation result that survives every control we have run is the one in Figure~\ref{fig:e5b}, restated under a streaming quota in Figure~\ref{fig:e11b} and under a matched three-probe fixed top-30 grid in Section~\ref{sec:e15}: a readout of consequence, taken from the residual stream, protects rare critical facts better than replaying at random and better than replaying by surprise or by detected forgetting.
+Surprise is actively the wrong ranking.
+It prefers the traps.
+Forgetting is the wrong filter on its own: a fact can be forgotten and still not be worth the slot.
+
+What the later experiments add, and what they take back, should stay in the same paragraph as the claim.
+On this template set the signal is linearly decodable and sparse, readable across the 0.5B--7B sweep, and not explained by bag-of-words or a prompt (Sections~\ref{sec:e7}--\ref{sec:e10}).
+Family holdout with a non-tied validation layer pick still sits near that ceiling (mean AUROC $0.953$, one reverse outlier fold; Section~\ref{sec:e13}), so the optimistic layer map of Section~\ref{sec:e7} was not an artefact of picking layer~0 on ties---and the tie-break toward $\{6,16\}$ remains a rule, not a locus claim.
+The global top-30 was a softer gate than it looked, because it knew $N$; top-3 per day gives most of the selection back without that knowledge, and after sleep it still beats random.
+Against a strong lexical stream under that quota the multi-world mean was only a small lead, and on one world the seed bar was compatible with zero---until Section~\ref{sec:e16} moved the comparison off-template.
+There, probes keep AUROC 0.98--0.99 while word TF-IDF falls to about 0.65, and MiniLM/e5 match the probes: the readout story's headline positive is that criticality is semantic, not lexical. The soft TF-IDF sleep margin is plausibly a template effect, but sleep itself was not re-run off-template.
+The same section takes something back: the 0.5B residual is not privileged over off-the-shelf semantic encoders on content-evident criticality.
+What the residual readout offers over an external encoder is economy, not accuracy: it reuses a forward pass the model already makes and needs no second model. We did not run sleep with MiniLM or e5 as the gate and expect it to match the probe. The exam also exposes a gap inside the small model: asked directly, the 0.5B model rates criticality below chance (0.42), while a linear readout of its own layer~16 reaches 0.99.
+With the streaming set held fixed, there is no evidence that the default $0.3{+}0.7\,S$ mix helps over uniform or $S$-only weights (Section~\ref{sec:e12}), so the consolidation claim should be read as a claim about the gate, not about that nocturnal weighting.
+Under the original fixed top-30 night, layer-6 and layer-16 linears retain about as many criticals as the layer-16 MLP and sit near the oracle (Section~\ref{sec:e15}); detection is not the bottleneck, and the remaining gap is sleep capacity under a shared culture tax that drops capitals from about 12 to 8--9 in every arm, oracle included.
+We report the linears beside the MLP rather than hiding behind the MLP-only cell.
+Iterative nullspace projection never drives a fresh probe to chance (Section~\ref{sec:e14}), so the interim ablation in Section~\ref{sec:e9} stays a sanity check on the frozen score and does not support a causal or necessity claim for $\hat w_{\mathrm{crit}}$.
+Sections~\ref{sec:e17}--\ref{sec:e17b} draw the hard boundary: when criticality is not on the sentence but only in LoRA-stored person risks, the pre-registered adapter-on readouts are weak ($0.57{\pm}0.05$ mean pool; $0.57{\pm}0.02$ last token), phrase-only controls sit at chance, and context injection recovers the task (0.90 / 0.99).
+We claim content-evident criticality readable in residuals; we do not claim that the probe reads pure parametric LoRA memory for related risk sentences without explicit context.
+
+Several limits are unchanged, and none of the next checks below is treated as a blocker for this draft.
+The probe is supervised.
+A self-taught version would label facts by counterfactual dreams---imagined questions answered with and without the fact, scored by harm avoided---and distill that label into the same cheap probe; that experiment has not been run.
+Sleep itself has not been re-run above 0.5B.
+Future work, briefly: hold out names and templates more aggressively than the family fold; refit a probe after the direction ablation for a causal rather than sanity reading; and vary the gate of Section~\ref{sec:e12} itself rather than only the nocturnal loss mix under a frozen salient set.
+The loss-mix separation of selection from weighting is one world and one sleep seed, without the mastery quiz of the streaming retention run.
+The three-probe grid keeps the MLP on the full 144-pool and the linears on the cleaned 136-pool; that confound is reported, not removed.
+Culture under the probe is noisy at the single seed (6/15 in the $k{=}12$ seed~0 of Section~\ref{sec:e5b}; about 7.7--9.3 in Section~\ref{sec:e15}).
+Three-seed contrasts are descriptive, not confirmatory.
+Relative to MemGPT, the decision here is what becomes weight rather than what is paged out to a store.
+Relative to representation engineering, the direction is a consolidation policy rather than a monitor.
+Relative to valence-and-surprise gates, the label is consequence, and the scorer for content-evident facts is the model's own hidden state---or, as Section~\ref{sec:e16} shows, a generic semantic encoder.
+
+\section{Conclusion}
+
+A small probe on the residual stream of a small instruction-tuned model reads which facts are costly to forget when that cost is evident in the text, and that score is a workable gate for nocturnal LoRA replay.
+With a large enough quota it is not distinguishable from a label oracle at $n{=}3$ and beats surprise and forgetting-driven replay; a streaming oracle with the same daily quota can still beat the probe.
+On this template set the same signal is linearly decodable, survives a layer and scale sweep as a \emph{readout}, holds up under family holdout with a non-tied layer pick, and is not explained by keywords or by asking the 0.5B model.
+When the gate is forced to choose online, it still beats random sleep; the in-template advantage over TF-IDF under that constraint was small, but off-template the probe and MiniLM/e5 keep AUROC near 0.99 while word TF-IDF falls to about 0.65---criticality is semantic, not lexical.
+There is no evidence that the nocturnal $0.3{+}0.7\,S$ mix helps once selection is held fixed.
+Under one fixed top-30 night the layer-6 and layer-16 linears match the layer-16 MLP within about a critical and sit near the oracle (about 18--19 vs.\ random 12.7 vs.\ oracle 20.7); the residual gap is capacity and a shared culture tax, not detection.
+Nullspace recovery blocks reading the ablation as causal necessity.
+When criticality depends only on LoRA-stored person risks, pre-registered mean-pool and last-token readouts stay weak (${\sim}0.57$) against chance controls and a strong context-injection reference: we do not claim that the probe reads pure parametric LoRA memory for related risk sentences without explicit context.
+Selective parametric memory, on this evidence, is less about detecting novelty than about reading content-evident consequence already available to a semantic representation---and Sections~\ref{sec:e16}--\ref{sec:e17b} are part of how large that advantage is allowed to look.
+
+\section*{Code and Data Availability}
+Code and synthetic datasets will be released at a public URL upon arXiv posting.
+
+\section*{Acknowledgments}
+Experiment design, code and drafting were assisted by AI tools (Claude, Cursor); the out-of-template exam sentences were generated with ChatGPT and screened with Gemini. The author ran every experiment and is responsible for the numbers and the claims.
+
+\begin{thebibliography}{99}
+
+\bibitem{alain2016probe}
+G.~Alain and Y.~Bengio.
+\newblock Understanding intermediate layers using linear classifier probes.
+\newblock arXiv:1610.01644, 2016.
+
+\bibitem{behrouz2025titans}
+A.~Behrouz, P.~Zhong, and V.~Mirrokni.
+\newblock Titans: Learning to Memorize at Test Time.
+\newblock arXiv:2501.00663, 2025.
+
+\bibitem{behrouz2026sleep}
+A.~Behrouz, M.~Hashemi, A.~Javanmard, and V.~Mirrokni.
+\newblock Language Models Need Sleep: Learning to Self-Modify and Consolidate Memories.
+\newblock arXiv:2606.03979, 2026.
+
+\bibitem{dennis2026nightly}
+S.~Dennis, K.~Shabahang, H.~Guo, and R.~Patil.
+\newblock Beyond Inference-Only Deployment: Comparing Weight-Based Consolidation Against Cascading Compaction.
+\newblock arXiv:2605.24657, 2026.
+
+\bibitem{han2026evaf}
+H.~Han.
+\newblock EVAF: A Test-Retest Protocol for Selective Parametric Consolidation in Large Language Models.
+\newblock arXiv:2606.29916, 2026.
+
+\bibitem{hu2021lora}
+E.~J.~Hu et~al.
+\newblock LoRA: Low-Rank Adaptation of Large Language Models.
+\newblock arXiv:2106.09685, 2021.
+
+\bibitem{li2016lwf}
+Z.~Li and D.~Hoiem.
+\newblock Learning without Forgetting.
+\newblock arXiv:1606.09282, 2016.
+
+\bibitem{meng2022rome}
+K.~Meng, D.~Bau, A.~Andonian, and Y.~Belinkov.
+\newblock Locating and Editing Factual Associations in GPT.
+\newblock NeurIPS, 2022.
+
+\bibitem{packer2023memgpt}
+C.~Packer et~al.
+\newblock MemGPT: Towards LLMs as Operating Systems.
+\newblock arXiv:2310.08560, 2023.
+
+\bibitem{park2023generative}
+J.~S.~Park et~al.
+\newblock Generative Agents: Interactive Simulacra of Human Behavior.
+\newblock arXiv:2304.03442, 2023.
+
+\bibitem{qwen2025}
+Qwen Team.
+\newblock Qwen2.5 Technical Report.
+\newblock arXiv:2412.15115, 2024.
+
+\bibitem{schaul2015per}
+T.~Schaul, J.~Quan, I.~Antonoglou, and D.~Silver.
+\newblock Prioritized Experience Replay.
+\newblock arXiv:1511.05952, 2015.
+
+\bibitem{zou2023repe}
+A.~Zou et~al.
+\newblock Representation Engineering: A Top-Down Approach to AI Transparency.
+\newblock arXiv:2310.01405, 2023.
+
+\end{thebibliography}
+
+\end{document}

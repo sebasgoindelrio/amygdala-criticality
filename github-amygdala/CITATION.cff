@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+title: "Surprise Is Not Importance: Criticality Read from Hidden States Gates Sleep-Like Consolidation"
+message: "If you use this software or repository, please cite the Zenodo preprint (preferred-citation below)."
+type: software
+authors:
+  - family-names: "Goin del Rio"
+    given-names: Sebastian
+    orcid: "https://orcid.org/0009-0006-1147-9995"
+    affiliation: "Independent researcher, Switzerland"
+    email: sebastiangoindelrio@gmail.com
+repository-code: "https://github.com/sebasgoindelrio/amygdala-criticality"
+license: MIT
+preferred-citation:
+  type: article
+  title: "Surprise Is Not Importance: Criticality Read from Hidden States Gates Sleep-Like Consolidation"
+  authors:
+    - family-names: "Goin del Rio"
+      given-names: Sebastian
+      orcid: "https://orcid.org/0009-0006-1147-9995"
+  year: 2026
+  doi: 10.5281/zenodo.24131189
+  url: "https://doi.org/10.5281/zenodo.24131189"
+  license: CC-BY-4.0
