@@ -18,6 +18,17 @@ preferred-citation:
       given-names: Sebastian
       orcid: "https://orcid.org/0009-0006-1147-9995"
   year: 2026
-  doi: 10.5281/zenodo.24131189
-  url: "https://doi.org/10.5281/zenodo.24131189"
+  doi: 10.5281/zenodo.24164569
+  url: "https://doi.org/10.5281/zenodo.24164569"
   license: CC-BY-4.0
+references:
+  - type: article
+    title: "Ask What Forgetting Would Cost: A Label-Free Judge Gates Nightly Replay of Free-Text Facts"
+    authors:
+      - family-names: "Goin del Rio"
+        given-names: Sebastian
+        orcid: "https://orcid.org/0009-0006-1147-9995"
+    year: 2026
+    doi: 10.5281/zenodo.24164503
+    url: "https://doi.org/10.5281/zenodo.24164503"
+    license: CC-BY-4.0

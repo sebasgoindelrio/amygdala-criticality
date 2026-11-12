@@ -1,0 +1,258 @@
+[   0.0 min] Orden de las noches (posiciones 0-149): 8 79 1 143 125 28 13 119 81 31 | 105 82 24 130 44 75 147 133 95 54 | 102 45 12 16 32 77 89 80 53 5 | 29 92 41 108 126 99 27 50 65 48 | 6 87 100 144 76 21 22 146 140 123 | 67 7 39 61 66 98 36 118 33 116 | 38 35 97 90 137 120 106 128 136 34 | 73 101 40 117 64 57 141 132 52 68 | 18 134 112 49 91 96 71 110 113 74 | 84 86 26 25 9 30 138 124 85 23 | 114 62 51 43 93 70 20 58 115 103 | 15 11 127 139 19 2 47 83 14 88 | 63 69 149 145 4 56 78 104 111 10 | 142 59 37 17 109 94 3 0 60 135 | 129 46 131 121 55 122 72 148 107 42
+[   0.0 min] Críticos por noche: 5 1 4 2 3 3 2 0 1 5 1 5 2 4 0
+[   0.3 min] E21b · modos ['azar', 'olvido', 'juez', 'oraculo'] · semillas [1, 2, 3, 4] · k=12 (hasta 9 prioritarios) · 28 pasadas · lr: escalera [0.0002] · λ 1.0 · GPUs 1
+[   0.7 min] Juez P(Yes): AUROC 0.992 | salientes del juez que son críticos 30/45 (azar esperado ~11.4; techo con 3 por noche 30) | trampas entre salientes 0
+[   0.7 min]    nota media del juez · explicito es: 0.60
+[   0.7 min]    nota media del juez · explicito en: 0.57
+[   0.7 min]    nota media del juez · implicito es: 0.48
+[   0.7 min]    nota media del juez · implicito en: 0.66
+[   0.7 min]    nota media del juez · trampa    es: 0.01
+[   0.7 min]    nota media del juez · trampa    en: 0.01
+[   0.7 min]    nota media del juez · trivial   es: 0.02
+[   0.7 min]    nota media del juez · trivial   en: 0.02
+[   0.0 min] Orden de las noches (posiciones 0-149): 8 79 1 143 125 28 13 119 81 31 | 105 82 24 130 44 75 147 133 95 54 | 102 45 12 16 32 77 89 80 53 5 | 29 92 41 108 126 99 27 50 65 48 | 6 87 100 144 76 21 22 146 140 123 | 67 7 39 61 66 98 36 118 33 116 | 38 35 97 90 137 120 106 128 136 34 | 73 101 40 117 64 57 141 132 52 68 | 18 134 112 49 91 96 71 110 113 74 | 84 86 26 25 9 30 138 124 85 23 | 114 62 51 43 93 70 20 58 115 103 | 15 11 127 139 19 2 47 83 14 88 | 63 69 149 145 4 56 78 104 111 10 | 142 59 37 17 109 94 3 0 60 135 | 129 46 131 121 55 122 72 148 107 42
+[   0.0 min] Críticos por noche: 5 1 4 2 3 3 2 0 1 5 1 5 2 4 0
+[   0.1 min] E21b · modos ['azar', 'olvido', 'juez', 'oraculo'] · semillas [1, 2, 3, 4] · k=12 (hasta 9 prioritarios) · 28 pasadas · lr: escalera [0.0002] · λ 1.0 · GPUs 1
+[   0.2 min] Juez P(Yes): AUROC 0.992 | salientes del juez que son críticos 30/45 (azar esperado ~11.4; techo con 3 por noche 30) | trampas entre salientes 0
+[   0.2 min]    nota media del juez · explicito es: 0.60
+[   0.2 min]    nota media del juez · explicito en: 0.57
+[   0.2 min]    nota media del juez · implicito es: 0.48
+[   0.2 min]    nota media del juez · implicito en: 0.66
+[   0.2 min]    nota media del juez · trampa    es: 0.01
+[   0.2 min]    nota media del juez · trampa    en: 0.01
+[   0.2 min]    nota media del juez · trivial   es: 0.02
+[   0.2 min]    nota media del juez · trivial   en: 0.02
+  lr 0.0002 · ejemplos tras la noche de prueba 1 (pregunta | clave | respuesta):
+    ¿Qué día tiene Pablo Serrano su audiencia judicial? | 3 de diciembre | 3 de diciembre
+    Which herbs does Benjamin Harris grow in his kitchen? | basil | basil
+    ¿Hasta qué día tiene Lucía Fernández para presentar su recurso? | 18 de noviembre | 18 de noviembre
+    How many pieces did Lucas Martin's model airplane contain? | 240 | 240
+    What does Harriet Cole enjoy making during warm afternoons? | lemonade | lemonade
+    ¿Cuánto tiempo lleva Elena Prieto usando la misma contraseña? | cuatro meses;4 meses | cuatro meses
+    cultura tras la noche de prueba: 12/15
+[   4.9 min] Puerta P2 con lr 0.0002: recuerdo tras una noche 9.3/10 [10, 10, 8]
+[   4.9 min] Tasa de aprendizaje elegida para las noches: 0.0002
+
+================ PUERTA ================
+  OK    P1 base a libro cerrado < 5%             0.013
+  OK    P2 recuerdo tras una noche >= 8/10       9.3 [10, 10, 8] (lr 0.0002)
+  OK    P3 AUROC del juez >= 0.90                0.992
+  cultura del modelo base: 12/15
+[   6.1 min] azar    s1 noche 01/15 | olvidados entre los vistos 0/0 (críticos 0) | repaso 0 (críticos 0)
+[   8.3 min] azar    s1 noche 02/15 | olvidados entre los vistos 0/10 (críticos 0) | repaso 10 (críticos 5)
+[  10.6 min] azar    s1 noche 03/15 | olvidados entre los vistos 0/20 (críticos 0) | repaso 12 (críticos 4)
+[  13.0 min] azar    s1 noche 04/15 | olvidados entre los vistos 3/30 (críticos 1) | repaso 12 (críticos 5)
+[  15.3 min] azar    s1 noche 05/15 | olvidados entre los vistos 9/40 (críticos 4) | repaso 12 (críticos 1)
+[  17.7 min] azar    s1 noche 06/15 | olvidados entre los vistos 15/50 (críticos 6) | repaso 12 (críticos 1)
+[  20.0 min] azar    s1 noche 07/15 | olvidados entre los vistos 22/60 (críticos 10) | repaso 12 (críticos 3)
+[  22.4 min] azar    s1 noche 08/15 | olvidados entre los vistos 29/70 (críticos 8) | repaso 12 (críticos 4)
+[  24.8 min] azar    s1 noche 09/15 | olvidados entre los vistos 42/80 (críticos 12) | repaso 12 (críticos 6)
+[  27.2 min] azar    s1 noche 10/15 | olvidados entre los vistos 56/90 (críticos 11) | repaso 12 (críticos 5)
+[  29.6 min] azar    s1 noche 11/15 | olvidados entre los vistos 67/100 (críticos 13) | repaso 12 (críticos 5)
+[  32.0 min] azar    s1 noche 12/15 | olvidados entre los vistos 69/110 (críticos 17) | repaso 12 (críticos 3)
+[  34.3 min] azar    s1 noche 13/15 | olvidados entre los vistos 76/120 (críticos 16) | repaso 12 (críticos 2)
+[  36.7 min] azar    s1 noche 14/15 | olvidados entre los vistos 88/130 (críticos 23) | repaso 12 (críticos 4)
+[  39.2 min] azar    s1 noche 15/15 | olvidados entre los vistos 91/140 (críticos 25) | repaso 12 (críticos 5)
+[  39.3 min] azar    s1 FIN | críticos 8/38 (expl 3/20, impl 5/18; es 5/19, en 3/19) | triviales 30/92 | trampas 5/20 | cultura 12->11/15 | 34.4 min
+[  40.6 min] olvido  s1 noche 01/15 | olvidados entre los vistos 0/0 (críticos 0) | repaso 0 (críticos 0)
+[  42.7 min] olvido  s1 noche 02/15 | olvidados entre los vistos 0/10 (críticos 0) | repaso 10 (críticos 5)
+[  45.1 min] olvido  s1 noche 03/15 | olvidados entre los vistos 0/20 (críticos 0) | repaso 12 (críticos 4)
+[  47.5 min] olvido  s1 noche 04/15 | olvidados entre los vistos 3/30 (críticos 1) | repaso 12 (críticos 3)
+[  49.8 min] olvido  s1 noche 05/15 | olvidados entre los vistos 6/40 (críticos 4) | repaso 12 (críticos 5)
+[  52.2 min] olvido  s1 noche 06/15 | olvidados entre los vistos 19/50 (críticos 4) | repaso 12 (críticos 2)
+[  54.6 min] olvido  s1 noche 07/15 | olvidados entre los vistos 20/60 (críticos 9) | repaso 12 (críticos 6)
+[  57.0 min] olvido  s1 noche 08/15 | olvidados entre los vistos 27/70 (críticos 7) | repaso 12 (críticos 5)
+[  59.4 min] olvido  s1 noche 09/15 | olvidados entre los vistos 47/80 (críticos 12) | repaso 12 (críticos 4)
+[  61.7 min] olvido  s1 noche 10/15 | olvidados entre los vistos 53/90 (críticos 9) | repaso 12 (críticos 1)
+[  64.1 min] olvido  s1 noche 11/15 | olvidados entre los vistos 60/100 (críticos 16) | repaso 12 (críticos 2)
+[  66.5 min] olvido  s1 noche 12/15 | olvidados entre los vistos 75/110 (críticos 22) | repaso 12 (críticos 6)
+[  68.8 min] olvido  s1 noche 13/15 | olvidados entre los vistos 78/120 (críticos 18) | repaso 12 (críticos 3)
+[  71.2 min] olvido  s1 noche 14/15 | olvidados entre los vistos 91/130 (críticos 23) | repaso 12 (críticos 4)
+[  73.6 min] olvido  s1 noche 15/15 | olvidados entre los vistos 100/140 (críticos 24) | repaso 12 (críticos 5)
+[  73.7 min] olvido  s1 FIN | críticos 13/38 (expl 7/20, impl 6/18; es 5/19, en 8/19) | triviales 29/92 | trampas 6/20 | cultura 12->9/15 | 34.4 min
+[  75.0 min] juez    s1 noche 01/15 | olvidados entre los vistos 0/0 (críticos 0) | repaso 0 (críticos 0) | salientes críticos 3/3
+[  77.1 min] juez    s1 noche 02/15 | olvidados entre los vistos 0/10 (críticos 0) | repaso 10 (críticos 5) | salientes críticos 4/6
+[  79.5 min] juez    s1 noche 03/15 | olvidados entre los vistos 0/20 (críticos 0) | repaso 12 (críticos 4) | salientes críticos 7/9
+[  81.9 min] juez    s1 noche 04/15 | olvidados entre los vistos 3/30 (críticos 1) | repaso 12 (críticos 3) | salientes críticos 9/12
+[  84.2 min] juez    s1 noche 05/15 | olvidados entre los vistos 2/40 (críticos 2) | repaso 12 (críticos 3) | salientes críticos 12/15
+[  86.6 min] juez    s1 noche 06/15 | olvidados entre los vistos 18/50 (críticos 4) | repaso 12 (críticos 4) | salientes críticos 15/18
+[  89.0 min] juez    s1 noche 07/15 | olvidados entre los vistos 26/60 (críticos 6) | repaso 12 (críticos 4) | salientes críticos 17/21
+[  91.3 min] juez    s1 noche 08/15 | olvidados entre los vistos 32/70 (críticos 8) | repaso 12 (críticos 6) | salientes críticos 17/24
+[  93.7 min] juez    s1 noche 09/15 | olvidados entre los vistos 41/80 (críticos 9) | repaso 12 (críticos 7) | salientes críticos 18/27
+[  96.1 min] juez    s1 noche 10/15 | olvidados entre los vistos 48/90 (críticos 10) | repaso 12 (críticos 7) | salientes críticos 21/30
+[  98.5 min] juez    s1 noche 11/15 | olvidados entre los vistos 65/100 (críticos 10) | repaso 12 (críticos 6) | salientes críticos 22/33
+[ 100.9 min] juez    s1 noche 12/15 | olvidados entre los vistos 64/110 (críticos 11) | repaso 12 (críticos 7) | salientes críticos 25/36
+[ 103.3 min] juez    s1 noche 13/15 | olvidados entre los vistos 83/120 (críticos 16) | repaso 12 (críticos 8) | salientes críticos 27/39
+[ 105.7 min] juez    s1 noche 14/15 | olvidados entre los vistos 91/130 (críticos 16) | repaso 12 (críticos 8) | salientes críticos 30/42
+[ 108.0 min] juez    s1 noche 15/15 | olvidados entre los vistos 91/140 (críticos 11) | repaso 12 (críticos 5) | salientes críticos 30/45
+[ 108.2 min] juez    s1 FIN | críticos 22/38 (expl 11/20, impl 11/18; es 11/19, en 11/19) | triviales 26/92 | trampas 6/20 | cultura 12->11/15 | 34.5 min
+[ 109.5 min] azar    s2 noche 01/15 | olvidados entre los vistos 0/0 (críticos 0) | repaso 0 (críticos 0)
+[ 111.6 min] azar    s2 noche 02/15 | olvidados entre los vistos 0/10 (críticos 0) | repaso 10 (críticos 5)
+[ 114.0 min] azar    s2 noche 03/15 | olvidados entre los vistos 0/20 (críticos 0) | repaso 12 (críticos 3)
+[ 116.4 min] azar    s2 noche 04/15 | olvidados entre los vistos 5/30 (críticos 2) | repaso 12 (críticos 5)
+[ 118.7 min] azar    s2 noche 05/15 | olvidados entre los vistos 14/40 (críticos 5) | repaso 12 (críticos 5)
+[ 121.1 min] azar    s2 noche 06/15 | olvidados entre los vistos 23/50 (críticos 4) | repaso 12 (críticos 1)
+[ 123.5 min] azar    s2 noche 07/15 | olvidados entre los vistos 22/60 (críticos 6) | repaso 12 (críticos 4)
+[ 125.9 min] azar    s2 noche 08/15 | olvidados entre los vistos 34/70 (críticos 12) | repaso 12 (críticos 4)
+[ 128.2 min] azar    s2 noche 09/15 | olvidados entre los vistos 43/80 (críticos 13) | repaso 12 (críticos 3)
+[ 130.6 min] azar    s2 noche 10/15 | olvidados entre los vistos 48/90 (críticos 12) | repaso 12 (críticos 2)
+[ 133.0 min] azar    s2 noche 11/15 | olvidados entre los vistos 68/100 (críticos 16) | repaso 12 (críticos 3)
+[ 135.3 min] azar    s2 noche 12/15 | olvidados entre los vistos 62/110 (críticos 15) | repaso 12 (críticos 3)
+[ 137.7 min] azar    s2 noche 13/15 | olvidados entre los vistos 70/120 (críticos 18) | repaso 12 (críticos 3)
+[ 140.1 min] azar    s2 noche 14/15 | olvidados entre los vistos 85/130 (críticos 20) | repaso 12 (críticos 2)
+[ 142.5 min] azar    s2 noche 15/15 | olvidados entre los vistos 88/140 (críticos 26) | repaso 12 (críticos 4)
+[ 142.7 min] azar    s2 FIN | críticos 10/38 (expl 7/20, impl 3/18; es 5/19, en 5/19) | triviales 29/92 | trampas 6/20 | cultura 12->9/15 | 34.5 min
+[ 143.9 min] olvido  s2 noche 01/15 | olvidados entre los vistos 0/0 (críticos 0) | repaso 0 (críticos 0)
+[ 146.1 min] olvido  s2 noche 02/15 | olvidados entre los vistos 0/10 (críticos 0) | repaso 10 (críticos 5)
+[ 148.4 min] olvido  s2 noche 03/15 | olvidados entre los vistos 0/20 (críticos 0) | repaso 12 (críticos 3)
+[ 150.8 min] olvido  s2 noche 04/15 | olvidados entre los vistos 5/30 (críticos 2) | repaso 12 (críticos 5)
+[ 153.1 min] olvido  s2 noche 05/15 | olvidados entre los vistos 14/40 (críticos 4) | repaso 12 (críticos 4)
+[ 155.5 min] olvido  s2 noche 06/15 | olvidados entre los vistos 18/50 (críticos 6) | repaso 12 (críticos 4)
+[   0.0 min] Orden de las noches (posiciones 0-149): 8 79 1 143 125 28 13 119 81 31 | 105 82 24 130 44 75 147 133 95 54 | 102 45 12 16 32 77 89 80 53 5 | 29 92 41 108 126 99 27 50 65 48 | 6 87 100 144 76 21 22 146 140 123 | 67 7 39 61 66 98 36 118 33 116 | 38 35 97 90 137 120 106 128 136 34 | 73 101 40 117 64 57 141 132 52 68 | 18 134 112 49 91 96 71 110 113 74 | 84 86 26 25 9 30 138 124 85 23 | 114 62 51 43 93 70 20 58 115 103 | 15 11 127 139 19 2 47 83 14 88 | 63 69 149 145 4 56 78 104 111 10 | 142 59 37 17 109 94 3 0 60 135 | 129 46 131 121 55 122 72 148 107 42
+[   0.0 min] Críticos por noche: 5 1 4 2 3 3 2 0 1 5 1 5 2 4 0
+[   0.3 min] E21c (Llama-3.2-1B) · modos ['azar', 'olvido', 'juez', 'oraculo'] · semillas [0, 1, 2] · k=12 (hasta 9 prioritarios) · 28 pasadas · lr: escalera [0.0001, 0.0002, 0.0004] · λ 1.0 · GPUs 1
+[   0.7 min] Juez P(Yes): AUROC 0.992 | salientes del juez que son críticos 30/45 (azar esperado ~11.4; techo con 3 por noche 30) | trampas entre salientes 0
+[   0.7 min]    nota media del juez · explicito es: 0.60
+[   0.7 min]    nota media del juez · explicito en: 0.57
+[   0.7 min]    nota media del juez · implicito es: 0.48
+[   0.7 min]    nota media del juez · implicito en: 0.66
+[   0.7 min]    nota media del juez · trampa    es: 0.01
+[   0.7 min]    nota media del juez · trampa    en: 0.01
+[   0.7 min]    nota media del juez · trivial   es: 0.02
+[   0.7 min]    nota media del juez · trivial   en: 0.02
+  lr 0.0001 · ejemplos tras la noche de prueba 1 (pregunta | clave | respuesta):
+    ¿Qué día tiene Pablo Serrano su audiencia judicial? | 3 de diciembre | 3 de diciembre
+    Which herbs does Benjamin Harris grow in his kitchen? | basil | basil
+    ¿Hasta qué día tiene Lucía Fernández para presentar su recurso? | 18 de noviembre | 18 de noviembre
+    How many pieces did Lucas Martin's model airplane contain? | 240 | 240
+    What does Harriet Cole enjoy making during warm afternoons? | lemonade | lemonade
+    ¿Cuánto tiempo lleva Elena Prieto usando la misma contraseña? | cuatro meses;4 meses | cuatro meses
+    cultura tras la noche de prueba: 14/15
+[   4.0 min] Puerta P2 con lr 0.0001: recuerdo tras una noche 10.0/10 [10, 10, 10]
+[   4.0 min] Tasa de aprendizaje elegida para las noches: 0.0001
+
+================ PUERTA ================
+  OK    P1 base a libro cerrado < 5%             0.000
+  OK    P2 recuerdo tras una noche >= 8/10       10.0 [10, 10, 10] (lr 0.0001)
+  OK    P3 AUROC del juez >= 0.90                0.992
+  cultura del modelo base: 14/15
+[   4.8 min] azar    s0 noche 01/15 | olvidados entre los vistos 0/0 (críticos 0) | repaso 0 (críticos 0)
+[   6.2 min] azar    s0 noche 02/15 | olvidados entre los vistos 0/10 (críticos 0) | repaso 10 (críticos 5)
+[   7.8 min] azar    s0 noche 03/15 | olvidados entre los vistos 0/20 (críticos 0) | repaso 12 (críticos 4)
+[   9.3 min] azar    s0 noche 04/15 | olvidados entre los vistos 3/30 (críticos 0) | repaso 12 (críticos 3)
+[  10.8 min] azar    s0 noche 05/15 | olvidados entre los vistos 11/40 (críticos 4) | repaso 12 (críticos 3)
+[  12.4 min] azar    s0 noche 06/15 | olvidados entre los vistos 20/50 (críticos 7) | repaso 12 (críticos 4)
+[  13.9 min] azar    s0 noche 07/15 | olvidados entre los vistos 20/60 (críticos 6) | repaso 12 (críticos 5)
+[  15.4 min] azar    s0 noche 08/15 | olvidados entre los vistos 32/70 (críticos 10) | repaso 12 (críticos 3)
+[  17.0 min] azar    s0 noche 09/15 | olvidados entre los vistos 42/80 (críticos 11) | repaso 12 (críticos 3)
+[  18.5 min] azar    s0 noche 10/15 | olvidados entre los vistos 51/90 (críticos 11) | repaso 12 (críticos 2)
+[  20.1 min] azar    s0 noche 11/15 | olvidados entre los vistos 60/100 (críticos 15) | repaso 12 (críticos 2)
+[  21.6 min] azar    s0 noche 12/15 | olvidados entre los vistos 64/110 (críticos 17) | repaso 12 (críticos 2)
+[  23.2 min] azar    s0 noche 13/15 | olvidados entre los vistos 73/120 (críticos 17) | repaso 12 (críticos 4)
+[  24.7 min] azar    s0 noche 14/15 | olvidados entre los vistos 81/130 (críticos 20) | repaso 12 (críticos 1)
+[  26.3 min] azar    s0 noche 15/15 | olvidados entre los vistos 90/140 (críticos 24) | repaso 12 (críticos 5)
+[  26.4 min] azar    s0 FIN | críticos 12/38 (expl 8/20, impl 4/18; es 8/19, en 4/19) | triviales 29/92 | trampas 7/20 | cultura 14->14/15 | 22.4 min
+[  27.2 min] juez    s0 noche 01/15 | olvidados entre los vistos 0/0 (críticos 0) | repaso 0 (críticos 0) | salientes críticos 3/3
+[  28.6 min] juez    s0 noche 02/15 | olvidados entre los vistos 0/10 (críticos 0) | repaso 10 (críticos 5) | salientes críticos 4/6
+[  30.1 min] juez    s0 noche 03/15 | olvidados entre los vistos 0/20 (críticos 0) | repaso 12 (críticos 4) | salientes críticos 7/9
+[  31.6 min] juez    s0 noche 04/15 | olvidados entre los vistos 3/30 (críticos 0) | repaso 12 (críticos 3) | salientes críticos 9/12
+[  33.1 min] juez    s0 noche 05/15 | olvidados entre los vistos 11/40 (críticos 4) | repaso 12 (críticos 6) | salientes críticos 12/15
+[  34.7 min] juez    s0 noche 06/15 | olvidados entre los vistos 18/50 (críticos 3) | repaso 12 (críticos 2) | salientes críticos 15/18
+[  36.2 min] juez    s0 noche 07/15 | olvidados entre los vistos 30/60 (críticos 11) | repaso 12 (críticos 9) | salientes críticos 17/21
+[  37.7 min] juez    s0 noche 08/15 | olvidados entre los vistos 30/70 (críticos 4) | repaso 12 (críticos 2) | salientes críticos 17/24
+[  39.2 min] juez    s0 noche 09/15 | olvidados entre los vistos 40/80 (críticos 8) | repaso 12 (críticos 6) | salientes críticos 18/27
+[  40.8 min] juez    s0 noche 10/15 | olvidados entre los vistos 50/90 (críticos 10) | repaso 12 (críticos 7) | salientes críticos 21/30
+[  42.3 min] juez    s0 noche 11/15 | olvidados entre los vistos 54/100 (críticos 5) | repaso 12 (críticos 5) | salientes críticos 22/33
+[  43.8 min] juez    s0 noche 12/15 | olvidados entre los vistos 61/110 (críticos 7) | repaso 12 (críticos 6) | salientes críticos 25/36
+[  45.4 min] juez    s0 noche 13/15 | olvidados entre los vistos 76/120 (críticos 15) | repaso 12 (críticos 7) | salientes críticos 27/39
+[  46.9 min] juez    s0 noche 14/15 | olvidados entre los vistos 82/130 (críticos 15) | repaso 12 (críticos 8) | salientes críticos 30/42
+[  48.4 min] juez    s0 noche 15/15 | olvidados entre los vistos 89/140 (críticos 15) | repaso 12 (críticos 6) | salientes críticos 30/45
+[  48.5 min] juez    s0 FIN | críticos 24/38 (expl 13/20, impl 11/18; es 10/19, en 14/19) | triviales 26/92 | trampas 4/20 | cultura 14->15/15 | 22.1 min
+[  49.4 min] azar    s1 noche 01/15 | olvidados entre los vistos 0/0 (críticos 0) | repaso 0 (críticos 0)
+[  50.8 min] azar    s1 noche 02/15 | olvidados entre los vistos 0/10 (críticos 0) | repaso 10 (críticos 5)
+[  52.3 min] azar    s1 noche 03/15 | olvidados entre los vistos 0/20 (críticos 0) | repaso 12 (críticos 4)
+[  55.4 min] azar    s1 noche 05/15 | olvidados entre los vistos 13/40 (críticos 5) | repaso 12 (críticos 1)
+[  56.9 min] azar    s1 noche 06/15 | olvidados entre los vistos 19/50 (críticos 7) | repaso 12 (críticos 1)
+[  58.5 min] azar    s1 noche 07/15 | olvidados entre los vistos 27/60 (críticos 9) | repaso 12 (críticos 3)
+[  60.1 min] azar    s1 noche 08/15 | olvidados entre los vistos 36/70 (críticos 10) | repaso 12 (críticos 4)
+[  61.7 min] azar    s1 noche 09/15 | olvidados entre los vistos 46/80 (críticos 12) | repaso 12 (críticos 6)
+[  63.2 min] azar    s1 noche 10/15 | olvidados entre los vistos 57/90 (críticos 12) | repaso 12 (críticos 5)
+[  64.8 min] azar    s1 noche 11/15 | olvidados entre los vistos 57/100 (críticos 10) | repaso 12 (críticos 5)
+[  66.3 min] azar    s1 noche 12/15 | olvidados entre los vistos 73/110 (críticos 15) | repaso 12 (críticos 3)
+[  67.9 min] azar    s1 noche 13/15 | olvidados entre los vistos 82/120 (críticos 19) | repaso 12 (críticos 2)
+[  69.5 min] azar    s1 noche 14/15 | olvidados entre los vistos 95/130 (críticos 25) | repaso 12 (críticos 4)
+[  71.2 min] azar    s1 noche 15/15 | olvidados entre los vistos 96/140 (críticos 28) | repaso 12 (críticos 5)
+[  71.3 min] azar    s1 FIN | críticos 10/38 (expl 6/20, impl 4/18; es 4/19, en 6/19) | triviales 26/92 | trampas 4/20 | cultura 14->12/15 | 22.7 min
+[  72.1 min] juez    s1 noche 01/15 | olvidados entre los vistos 0/0 (críticos 0) | repaso 0 (críticos 0) | salientes críticos 3/3
+[  73.6 min] juez    s1 noche 02/15 | olvidados entre los vistos 0/10 (críticos 0) | repaso 10 (críticos 5) | salientes críticos 4/6
+[  75.1 min] juez    s1 noche 03/15 | olvidados entre los vistos 0/20 (críticos 0) | repaso 12 (críticos 4) | salientes críticos 7/9
+[  76.7 min] juez    s1 noche 04/15 | olvidados entre los vistos 5/30 (críticos 1) | repaso 12 (críticos 5) | salientes críticos 9/12
+[  78.3 min] juez    s1 noche 05/15 | olvidados entre los vistos 8/40 (críticos 2) | repaso 12 (críticos 2) | salientes críticos 12/15
+[  79.8 min] juez    s1 noche 06/15 | olvidados entre los vistos 15/50 (críticos 4) | repaso 12 (críticos 5) | salientes críticos 15/18
+[  81.4 min] juez    s1 noche 07/15 | olvidados entre los vistos 22/60 (críticos 6) | repaso 12 (críticos 5) | salientes críticos 17/21
+[  83.0 min] juez    s1 noche 08/15 | olvidados entre los vistos 33/70 (críticos 10) | repaso 12 (críticos 8) | salientes críticos 17/24
+[  84.5 min] juez    s1 noche 09/15 | olvidados entre los vistos 43/80 (críticos 7) | repaso 12 (críticos 5) | salientes críticos 18/27
+[  86.1 min] juez    s1 noche 10/15 | olvidados entre los vistos 50/90 (críticos 5) | repaso 12 (críticos 2) | salientes críticos 21/30
+[  87.7 min] juez    s1 noche 11/15 | olvidados entre los vistos 56/100 (críticos 11) | repaso 12 (críticos 8) | salientes críticos 22/33
+[  89.3 min] juez    s1 noche 12/15 | olvidados entre los vistos 66/110 (críticos 11) | repaso 12 (críticos 6) | salientes críticos 25/36
+[  90.9 min] juez    s1 noche 13/15 | olvidados entre los vistos 75/120 (críticos 12) | repaso 12 (críticos 4) | salientes críticos 27/39
+[  92.4 min] juez    s1 noche 14/15 | olvidados entre los vistos 84/130 (críticos 14) | repaso 12 (críticos 6) | salientes críticos 30/42
+[  94.0 min] juez    s1 noche 15/15 | olvidados entre los vistos 89/140 (críticos 18) | repaso 12 (críticos 10) | salientes críticos 30/45
+[  94.1 min] juez    s1 FIN | críticos 23/38 (expl 11/20, impl 12/18; es 11/19, en 12/19) | triviales 27/92 | trampas 5/20 | cultura 14->13/15 | 22.8 min
+[  95.0 min] azar    s2 noche 01/15 | olvidados entre los vistos 0/0 (críticos 0) | repaso 0 (críticos 0)
+[  96.4 min] azar    s2 noche 02/15 | olvidados entre los vistos 0/10 (críticos 0) | repaso 10 (críticos 5)
+[  97.9 min] azar    s2 noche 03/15 | olvidados entre los vistos 0/20 (críticos 0) | repaso 12 (críticos 3)
+[  99.5 min] azar    s2 noche 04/15 | olvidados entre los vistos 4/30 (críticos 1) | repaso 12 (críticos 5)
+[ 101.0 min] azar    s2 noche 05/15 | olvidados entre los vistos 15/40 (críticos 4) | repaso 12 (críticos 5)
+[ 102.6 min] azar    s2 noche 06/15 | olvidados entre los vistos 26/50 (críticos 6) | repaso 12 (críticos 1)
+[ 104.2 min] azar    s2 noche 07/15 | olvidados entre los vistos 26/60 (críticos 6) | repaso 12 (críticos 4)
+[ 105.7 min] azar    s2 noche 08/15 | olvidados entre los vistos 36/70 (críticos 11) | repaso 12 (críticos 4)
+[ 107.3 min] azar    s2 noche 09/15 | olvidados entre los vistos 43/80 (críticos 15) | repaso 12 (críticos 3)
+[ 108.8 min] azar    s2 noche 10/15 | olvidados entre los vistos 53/90 (críticos 12) | repaso 12 (críticos 2)
+[ 110.4 min] azar    s2 noche 11/15 | olvidados entre los vistos 60/100 (críticos 15) | repaso 12 (críticos 3)
+[ 112.0 min] azar    s2 noche 12/15 | olvidados entre los vistos 70/110 (críticos 19) | repaso 12 (críticos 3)
+[ 113.6 min] azar    s2 noche 13/15 | olvidados entre los vistos 81/120 (críticos 19) | repaso 12 (críticos 3)
+[ 115.2 min] azar    s2 noche 14/15 | olvidados entre los vistos 85/130 (críticos 21) | repaso 12 (críticos 2)
+[ 116.7 min] azar    s2 noche 15/15 | olvidados entre los vistos 92/140 (críticos 27) | repaso 12 (críticos 4)
+[ 116.8 min] azar    s2 FIN | críticos 13/38 (expl 9/20, impl 4/18; es 5/19, en 8/19) | triviales 25/92 | trampas 8/20 | cultura 14->14/15 | 22.7 min
+[ 117.7 min] juez    s2 noche 01/15 | olvidados entre los vistos 0/0 (críticos 0) | repaso 0 (críticos 0) | salientes críticos 3/3
+[ 119.1 min] juez    s2 noche 02/15 | olvidados entre los vistos 0/10 (críticos 0) | repaso 10 (críticos 5) | salientes críticos 4/6
+[ 120.7 min] juez    s2 noche 03/15 | olvidados entre los vistos 0/20 (críticos 0) | repaso 12 (críticos 3) | salientes críticos 7/9
+[ 122.3 min] juez    s2 noche 04/15 | olvidados entre los vistos 4/30 (críticos 1) | repaso 12 (críticos 4) | salientes críticos 9/12
+[ 123.9 min] juez    s2 noche 05/15 | olvidados entre los vistos 13/40 (críticos 4) | repaso 12 (críticos 4) | salientes críticos 12/15
+[ 125.4 min] juez    s2 noche 06/15 | olvidados entre los vistos 25/50 (críticos 5) | repaso 12 (críticos 6) | salientes críticos 15/18
+[ 127.0 min] juez    s2 noche 07/15 | olvidados entre los vistos 22/60 (críticos 4) | repaso 12 (críticos 5) | salientes críticos 17/21
+[ 128.6 min] juez    s2 noche 08/15 | olvidados entre los vistos 34/70 (críticos 8) | repaso 12 (críticos 7) | salientes críticos 17/24
+[ 130.1 min] juez    s2 noche 09/15 | olvidados entre los vistos 41/80 (críticos 6) | repaso 12 (críticos 5) | salientes críticos 18/27
+[ 131.7 min] juez    s2 noche 10/15 | olvidados entre los vistos 53/90 (críticos 10) | repaso 12 (críticos 7) | salientes críticos 21/30
+[ 133.3 min] juez    s2 noche 11/15 | olvidados entre los vistos 60/100 (críticos 8) | repaso 12 (críticos 4) | salientes críticos 22/33
+[ 134.9 min] juez    s2 noche 12/15 | olvidados entre los vistos 66/110 (críticos 11) | repaso 12 (críticos 7) | salientes críticos 25/36
+[ 136.4 min] juez    s2 noche 13/15 | olvidados entre los vistos 82/120 (críticos 15) | repaso 12 (críticos 5) | salientes críticos 27/39
+[ 138.0 min] juez    s2 noche 14/15 | olvidados entre los vistos 90/130 (críticos 20) | repaso 12 (críticos 8) | salientes críticos 30/42
+[ 139.6 min] juez    s2 noche 15/15 | olvidados entre los vistos 90/140 (críticos 17) | repaso 12 (críticos 8) | salientes críticos 30/45
+[ 139.7 min] juez    s2 FIN | críticos 19/38 (expl 10/20, impl 9/18; es 8/19, en 11/19) | triviales 28/92 | trampas 6/20 | cultura 14->14/15 | 22.9 min
+
+================ RESUMEN ================
+  modo     semilla críticos/38 triviales/92 trampas/20 cultura   salientes críticos
+  azar     0       12          29           7          14->14    0/0
+  juez     0       24          26           4          14->15    30/45
+  azar     1       10          26           4          14->12    0/0
+  juez     1       23          27           5          14->13    30/45
+  azar     2       13          25           8          14->14    0/0
+  juez     2       19          28           6          14->14    30/45
+
+  semilla 0: juez-azar +12
+
+  semilla 1: juez-azar +13
+
+  semilla 2: juez-azar +6
+
+================ CSV ================
+modo,semilla,criticos,triviales,trampas,explicitos,implicitos,es,en,cultura_antes,cultura,salientes_criticos,aciertos
+azar,0,12,29,7,8,4,8,4,14,14,0,110110000100010001100000110010000001000000100010101010011000000000100101110001100101100000000000000100010001100000100001011001000101110100000010110011
+juez,0,24,26,4,13,11,10,14,14,15,30,010111010010111111101001100111100111010000110010000000010000001000000010100000000000000001000000010101001101110000100011011100000101100000100010010011
+azar,1,10,26,4,6,4,4,6,14,12,0,000110000001110001000010000011001000000000100010000000110000100000000001101001000100100001000000001000000101010010100001111000000101010000001010100110
+juez,1,23,27,5,11,12,11,12,14,13,30,100111100010110101011101110011100111100001100010000000011001110010000000100001100010000001000000010100000111010011000010111010000101000000000010010010
+azar,2,13,25,8,9,4,5,8,14,14,0,101111000000010101100000000001000110011010100010000011011000100110000011100001100010000001100000100010100001000100000000111000000111000000000010000011
+juez,2,19,28,6,10,9,8,11,14,14,30,100010010010111011101001101101000011011000100010000100011001100010000001100001110000100001000010100100000001010010101100011000000101100000100010100010
+[ 139.7 min] FIN
