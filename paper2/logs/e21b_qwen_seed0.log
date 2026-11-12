@@ -1,0 +1,146 @@
+[   0.0 min] Orden de las noches (posiciones 0-149): 8 79 1 143 125 28 13 119 81 31 | 105 82 24 130 44 75 147 133 95 54 | 102 45 12 16 32 77 89 80 53 5 | 29 92 41 108 126 99 27 50 65 48 | 6 87 100 144 76 21 22 146 140 123 | 67 7 39 61 66 98 36 118 33 116 | 38 35 97 90 137 120 106 128 136 34 | 73 101 40 117 64 57 141 132 52 68 | 18 134 112 49 91 96 71 110 113 74 | 84 86 26 25 9 30 138 124 85 23 | 114 62 51 43 93 70 20 58 115 103 | 15 11 127 139 19 2 47 83 14 88 | 63 69 149 145 4 56 78 104 111 10 | 142 59 37 17 109 94 3 0 60 135 | 129 46 131 121 55 122 72 148 107 42
+[   0.0 min] Críticos por noche: 5 1 4 2 3 3 2 0 1 5 1 5 2 4 0
+[   0.0 min] E21b · modos ['azar', 'olvido', 'juez', 'oraculo'] · semillas [0] · k=12 (hasta 9 prioritarios) · 28 pasadas · lr: escalera [0.0001, 0.0002, 0.0004] · λ 1.0 · GPUs 1
+Loading weights: 100%
+ 338/338 [00:00<00:00, 718.77it/s]
+[   0.1 min] Juez P(Yes): AUROC 0.992 | salientes del juez que son críticos 30/45 (azar esperado ~11.4; techo con 3 por noche 30) | trampas entre salientes 0
+[   0.1 min]    nota media del juez · explicito es: 0.60
+[   0.1 min]    nota media del juez · explicito en: 0.57
+[   0.1 min]    nota media del juez · implicito es: 0.48
+[   0.1 min]    nota media del juez · implicito en: 0.66
+[   0.1 min]    nota media del juez · trampa    es: 0.01
+[   0.1 min]    nota media del juez · trampa    en: 0.01
+[   0.1 min]    nota media del juez · trivial   es: 0.02
+[   0.1 min]    nota media del juez · trivial   en: 0.02
+Loading weights: 100%
+ 290/290 [00:00<00:00, 1749.13it/s]
+Loading weights: 100%
+ 290/290 [00:00<00:00, 1710.15it/s]
+  lr 0.0001 · ejemplos tras la noche de prueba 1 (pregunta | clave | respuesta):
+    ¿Qué día tiene Pablo Serrano su audiencia judicial? | 3 de diciembre | 3 de noviembre
+    Which herbs does Benjamin Harris grow in his kitchen? | basil | basil
+    ¿Hasta qué día tiene Lucía Fernández para presentar su recurso? | 18 de noviembre | 19 de noviembre
+    How many pieces did Lucas Martin's model airplane contain? | 240 | 240
+    What does Harriet Cole enjoy making during warm afternoons? | lemonade | lemonade
+    ¿Cuánto tiempo lleva Elena Prieto usando la misma contraseña? | cuatro meses;4 meses | cuatro meses
+    cultura tras la noche de prueba: 11/15
+Loading weights: 100%
+ 290/290 [00:00<00:00, 1708.10it/s]
+Loading weights: 100%
+ 290/290 [00:00<00:00, 1685.64it/s]
+[   4.8 min] Puerta P2 con lr 0.0001: recuerdo tras una noche 7.7/10 [8, 8, 7]
+Loading weights: 100%
+ 290/290 [00:00<00:00, 1709.55it/s]
+  lr 0.0002 · ejemplos tras la noche de prueba 1 (pregunta | clave | respuesta):
+    ¿Qué día tiene Pablo Serrano su audiencia judicial? | 3 de diciembre | 3 de diciembre
+    Which herbs does Benjamin Harris grow in his kitchen? | basil | basil
+    ¿Hasta qué día tiene Lucía Fernández para presentar su recurso? | 18 de noviembre | 18 de noviembre
+    How many pieces did Lucas Martin's model airplane contain? | 240 | 240
+    What does Harriet Cole enjoy making during warm afternoons? | lemonade | lemonade
+    ¿Cuánto tiempo lleva Elena Prieto usando la misma contraseña? | cuatro meses;4 meses | cuatro meses
+    cultura tras la noche de prueba: 12/15
+Loading weights: 100%
+ 290/290 [00:00<00:00, 2097.79it/s]
+Loading weights: 100%
+ 290/290 [00:00<00:00, 1781.85it/s]
+[   8.7 min] Puerta P2 con lr 0.0002: recuerdo tras una noche 9.3/10 [10, 10, 8]
+[   8.7 min] Tasa de aprendizaje elegida para las noches: 0.0002
+
+================ PUERTA ================
+  OK    P1 base a libro cerrado < 5%             0.013
+  OK    P2 recuerdo tras una noche >= 8/10       9.3 [10, 10, 8] (lr 0.0002)
+  OK    P3 AUROC del juez >= 0.90                0.992
+  cultura del modelo base: 12/15
+Loading weights: 100%
+ 290/290 [00:00<00:00, 1778.39it/s]
+[   9.9 min] azar    s0 noche 01/15 | olvidados entre los vistos 0/0 (críticos 0) | repaso 0 (críticos 0)
+[  12.1 min] azar    s0 noche 02/15 | olvidados entre los vistos 0/10 (críticos 0) | repaso 10 (críticos 5)
+[  14.5 min] azar    s0 noche 03/15 | olvidados entre los vistos 0/20 (críticos 0) | repaso 12 (críticos 4)
+[  16.8 min] azar    s0 noche 04/15 | olvidados entre los vistos 4/30 (críticos 1) | repaso 12 (críticos 3)
+[  19.2 min] azar    s0 noche 05/15 | olvidados entre los vistos 9/40 (críticos 3) | repaso 12 (críticos 3)
+[  21.6 min] azar    s0 noche 06/15 | olvidados entre los vistos 15/50 (críticos 5) | repaso 12 (críticos 4)
+[  24.0 min] azar    s0 noche 07/15 | olvidados entre los vistos 27/60 (críticos 7) | repaso 12 (críticos 5)
+[  26.3 min] azar    s0 noche 08/15 | olvidados entre los vistos 32/70 (críticos 9) | repaso 12 (críticos 3)
+[  28.7 min] azar    s0 noche 09/15 | olvidados entre los vistos 36/80 (críticos 10) | repaso 12 (críticos 3)
+[  31.1 min] azar    s0 noche 10/15 | olvidados entre los vistos 47/90 (críticos 11) | repaso 12 (críticos 2)
+[  33.5 min] azar    s0 noche 11/15 | olvidados entre los vistos 62/100 (críticos 15) | repaso 12 (críticos 2)
+[  35.9 min] azar    s0 noche 12/15 | olvidados entre los vistos 72/110 (críticos 18) | repaso 12 (críticos 2)
+[  38.3 min] azar    s0 noche 13/15 | olvidados entre los vistos 79/120 (críticos 20) | repaso 12 (críticos 4)
+[  40.7 min] azar    s0 noche 14/15 | olvidados entre los vistos 93/130 (críticos 24) | repaso 12 (críticos 1)
+[  43.1 min] azar    s0 noche 15/15 | olvidados entre los vistos 98/140 (críticos 27) | repaso 12 (críticos 5)
+[  43.4 min] azar    s0 FIN | críticos 8/38 (expl 6/20, impl 2/18; es 5/19, en 3/19) | triviales 29/92 | trampas 7/20 | cultura 12->10/15 | 34.7 min
+Loading weights: 100%
+ 290/290 [00:00<00:00, 1671.22it/s]
+[  44.6 min] oraculo s0 noche 01/15 | olvidados entre los vistos 0/0 (críticos 0) | repaso 0 (críticos 0) | salientes críticos 3/3
+[  46.8 min] oraculo s0 noche 02/15 | olvidados entre los vistos 0/10 (críticos 0) | repaso 10 (críticos 5) | salientes críticos 4/6
+[  49.2 min] oraculo s0 noche 03/15 | olvidados entre los vistos 0/20 (críticos 0) | repaso 12 (críticos 4) | salientes críticos 7/9
+[  51.6 min] oraculo s0 noche 04/15 | olvidados entre los vistos 4/30 (críticos 1) | repaso 12 (críticos 4) | salientes críticos 9/12
+[  53.9 min] oraculo s0 noche 05/15 | olvidados entre los vistos 12/40 (críticos 4) | repaso 12 (críticos 5) | salientes críticos 12/15
+[  56.3 min] oraculo s0 noche 06/15 | olvidados entre los vistos 18/50 (críticos 1) | repaso 12 (críticos 3) | salientes críticos 15/18
+[  58.7 min] oraculo s0 noche 07/15 | olvidados entre los vistos 27/60 (críticos 9) | repaso 12 (críticos 8) | salientes críticos 17/21
+[  61.1 min] oraculo s0 noche 08/15 | olvidados entre los vistos 29/70 (críticos 7) | repaso 12 (críticos 6) | salientes críticos 17/24
+[  63.5 min] oraculo s0 noche 09/15 | olvidados entre los vistos 36/80 (críticos 7) | repaso 12 (críticos 6) | salientes críticos 18/27
+[  65.9 min] oraculo s0 noche 10/15 | olvidados entre los vistos 45/90 (críticos 6) | repaso 12 (críticos 4) | salientes críticos 21/30
+[  68.3 min] oraculo s0 noche 11/15 | olvidados entre los vistos 55/100 (críticos 7) | repaso 12 (críticos 5) | salientes críticos 22/33
+[  70.7 min] oraculo s0 noche 12/15 | olvidados entre los vistos 60/110 (críticos 9) | repaso 12 (críticos 8) | salientes críticos 25/36
+[  73.2 min] oraculo s0 noche 13/15 | olvidados entre los vistos 77/120 (críticos 13) | repaso 12 (críticos 6) | salientes críticos 27/39
+[  75.6 min] oraculo s0 noche 14/15 | olvidados entre los vistos 83/130 (críticos 12) | repaso 12 (críticos 3) | salientes críticos 30/42
+[  78.0 min] oraculo s0 noche 15/15 | olvidados entre los vistos 91/140 (críticos 21) | repaso 12 (críticos 7) | salientes críticos 30/45
+[  78.3 min] oraculo s0 FIN | críticos 18/38 (expl 6/20, impl 12/18; es 7/19, en 11/19) | triviales 24/92 | trampas 5/20 | cultura 12->11/15 | 34.9 min
+[  78.3 min] Etapa 1 superada (semilla 0): hay margen. Etapa 2: ['olvido', 'juez']
+Loading weights: 100%
+ 290/290 [00:00<00:00, 1818.96it/s]
+[  79.5 min] olvido  s0 noche 01/15 | olvidados entre los vistos 0/0 (críticos 0) | repaso 0 (críticos 0)
+[  81.7 min] olvido  s0 noche 02/15 | olvidados entre los vistos 0/10 (críticos 0) | repaso 10 (críticos 5)
+[  84.1 min] olvido  s0 noche 03/15 | olvidados entre los vistos 0/20 (críticos 0) | repaso 12 (críticos 4)
+[  86.4 min] olvido  s0 noche 04/15 | olvidados entre los vistos 4/30 (críticos 1) | repaso 12 (críticos 3)
+[  88.8 min] olvido  s0 noche 05/15 | olvidados entre los vistos 9/40 (críticos 4) | repaso 12 (críticos 6)
+[  91.2 min] olvido  s0 noche 06/15 | olvidados entre los vistos 17/50 (críticos 4) | repaso 12 (críticos 1)
+[  93.6 min] olvido  s0 noche 07/15 | olvidados entre los vistos 25/60 (críticos 7) | repaso 12 (críticos 3)
+[  96.0 min] olvido  s0 noche 08/15 | olvidados entre los vistos 30/70 (críticos 10) | repaso 12 (críticos 6)
+[  98.3 min] olvido  s0 noche 09/15 | olvidados entre los vistos 46/80 (críticos 13) | repaso 12 (críticos 4)
+[ 100.7 min] olvido  s0 noche 10/15 | olvidados entre los vistos 44/90 (críticos 11) | repaso 12 (críticos 1)
+[ 103.1 min] olvido  s0 noche 11/15 | olvidados entre los vistos 69/100 (críticos 18) | repaso 12 (críticos 4)
+[ 105.6 min] olvido  s0 noche 12/15 | olvidados entre los vistos 73/110 (críticos 17) | repaso 12 (críticos 5)
+[ 108.0 min] olvido  s0 noche 13/15 | olvidados entre los vistos 79/120 (críticos 18) | repaso 12 (críticos 2)
+[ 110.4 min] olvido  s0 noche 14/15 | olvidados entre los vistos 85/130 (críticos 24) | repaso 12 (críticos 3)
+[ 112.8 min] olvido  s0 noche 15/15 | olvidados entre los vistos 96/140 (críticos 26) | repaso 12 (críticos 4)
+[ 113.0 min] olvido  s0 FIN | críticos 11/38 (expl 4/20, impl 7/18; es 6/19, en 5/19) | triviales 31/92 | trampas 7/20 | cultura 12->11/15 | 34.8 min
+Loading weights: 100%
+ 290/290 [00:00<00:00, 1335.20it/s]
+[ 114.3 min] juez    s0 noche 01/15 | olvidados entre los vistos 0/0 (críticos 0) | repaso 0 (críticos 0) | salientes críticos 3/3
+[ 116.4 min] juez    s0 noche 02/15 | olvidados entre los vistos 0/10 (críticos 0) | repaso 10 (críticos 5) | salientes críticos 4/6
+[ 118.8 min] juez    s0 noche 03/15 | olvidados entre los vistos 0/20 (críticos 0) | repaso 12 (críticos 4) | salientes críticos 7/9
+[ 121.2 min] juez    s0 noche 04/15 | olvidados entre los vistos 4/30 (críticos 1) | repaso 12 (críticos 3) | salientes críticos 9/12
+[ 123.6 min] juez    s0 noche 05/15 | olvidados entre los vistos 13/40 (críticos 6) | repaso 12 (críticos 7) | salientes críticos 12/15
+[ 126.0 min] juez    s0 noche 06/15 | olvidados entre los vistos 18/50 (críticos 4) | repaso 12 (críticos 3) | salientes críticos 15/18
+[ 128.4 min] juez    s0 noche 07/15 | olvidados entre los vistos 19/60 (críticos 3) | repaso 12 (críticos 5) | salientes críticos 17/21
+[ 130.8 min] juez    s0 noche 08/15 | olvidados entre los vistos 24/70 (críticos 4) | repaso 12 (críticos 7) | salientes críticos 17/24
+[ 133.2 min] juez    s0 noche 09/15 | olvidados entre los vistos 43/80 (críticos 8) | repaso 12 (críticos 8) | salientes críticos 18/27
+[ 135.5 min] juez    s0 noche 10/15 | olvidados entre los vistos 52/90 (críticos 6) | repaso 12 (críticos 6) | salientes críticos 21/30
+[ 137.9 min] juez    s0 noche 11/15 | olvidados entre los vistos 57/100 (críticos 11) | repaso 12 (críticos 7) | salientes críticos 22/33
+[ 140.3 min] juez    s0 noche 12/15 | olvidados entre los vistos 64/110 (críticos 12) | repaso 12 (críticos 7) | salientes críticos 25/36
+[ 142.7 min] juez    s0 noche 13/15 | olvidados entre los vistos 71/120 (críticos 11) | repaso 12 (críticos 4) | salientes críticos 27/39
+[ 145.1 min] juez    s0 noche 14/15 | olvidados entre los vistos 85/130 (críticos 17) | repaso 12 (críticos 9) | salientes críticos 30/42
+[ 147.5 min] juez    s0 noche 15/15 | olvidados entre los vistos 92/140 (críticos 14) | repaso 12 (críticos 5) | salientes críticos 30/45
+[ 147.8 min] juez    s0 FIN | críticos 15/38 (expl 7/20, impl 8/18; es 7/19, en 8/19) | triviales 27/92 | trampas 5/20 | cultura 12->10/15 | 34.8 min
+
+================ RESUMEN ================
+  modo     semilla críticos/38 triviales/92 trampas/20 cultura   salientes críticos
+  azar     0       8           29           7          12->10    0/0
+  olvido   0       11          31           7          12->11    0/0
+  juez     0       15          27           5          12->10    30/45
+  oraculo  0       18          24           5          12->11    30/45
+
+  semilla 0: oraculo-azar +10 (margen)
+
+  semilla 0: juez-azar +7 · juez-olvido +4 · oraculo-azar +10 (margen) · olvido-azar +3
+  REGLA PARA SEGUIR (juez > azar y oraculo-azar >= 4): SEGUIR con las semillas 1-4
+
+================ CSV ================
+modo,semilla,criticos,triviales,trampas,explicitos,implicitos,es,en,cultura_antes,cultura,salientes_criticos,aciertos
+azar,0,8,29,7,6,2,5,3,12,10,0,010110000100010001000000010000000000010100100010101010010011100001100001110001000000100001010000000100010001100000100001011000100101010000100010100011
+oraculo,0,18,24,5,6,12,7,11,12,11,30,000000100000011101101110011011010110110010100010000100010010000000000001100000000001100101000001000000010001000001111000011001001101110000100000000010
+olvido,0,11,31,7,4,7,6,5,12,11,0,010000000100010010000011010100001000110000100110010100010101100001000101100111000001100101000100000000010111010011100100011010000101000000000100100010
+juez,0,15,27,5,7,8,7,8,12,10,30,011010100010011000000010100100000111110000100010100000010100011010000000100001100010000001000000110101100101000000000001111000000101100010000010010011
+[ 147.8 min] FIN
